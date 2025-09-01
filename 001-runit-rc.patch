@@ -1,0 +1,24 @@
+diff -ur runit-rc.orig/sv.d/cryptsetup.in runit-rc/sv.d/cryptsetup.in
+--- runit-rc.orig/sv.d/cryptsetup.in	2024-04-30 15:33:05.000000000 +0100
++++ runit-rc/sv.d/cryptsetup.in	2025-08-28 10:00:43.784000000 +0100
+@@ -30,7 +30,7 @@
+ 				"key-slot"*) opts+="-S ${i##*=}" ;;
+ 				*)
+ 					printhl "The option is not currently supported at the moment."
+-					printhl "Please add an issue to https://github.com/artix-linux/runit-rc"
++					printhl "Please add an issue to https://github.com/artix-linux/nitro"
+ 					continue
+ 				;;
+ 			esac
+diff -ur runit-rc.orig/sv.d/udev.in runit-rc/sv.d/udev.in
+--- runit-rc.orig/sv.d/udev.in	2024-04-30 15:33:05.000000000 +0100
++++ runit-rc/sv.d/udev.in	2025-08-28 10:01:34.496000000 +0100
+@@ -8,7 +8,7 @@
+         stat_busy "Starting udev daemon"
+         udevd --daemon || stat_die udev
+         # Note: This is only needed for initialization, udev will
+-        #       be controlled by runit on stage 2.
++        #       be controlled by nitro after SYS/setup completes.
+         add_daemon udev
+         stat_done udev
+         ;;

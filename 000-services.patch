@@ -1,0 +1,174 @@
+diff --git a/README.md b/README.md
+index 2ccae43..5f185cb 100644
+--- a/README.md
++++ b/README.md
+@@ -11,7 +11,7 @@ There are four main applications it is designed for:
+ - As unprivileged supervision daemon on POSIX systems
+ 
+ nitro is configured by a directory of scripts, defaulting to
+-`/etc/nitro` (or the first command line argument).
++`/etc/nitro/services (or the first command line argument).
+ 
+ ## Requirements
+ 
+@@ -37,7 +37,7 @@ nitro is configured by a directory of scripts, defaulting to
+ 
+ ## Services
+ 
+-Every directory inside `/etc/nitro` (or your custom service directory)
++Every directory inside `/etc/nitro/services` (or your custom service directory)
+ can contain several files:
+ 
+ - `setup`, an optional executable file that is run before the service starts.
+@@ -143,7 +143,7 @@ Where COMMAND is one of:
+ - t: send signal SIGTERM to SERVICE
+ - k: send signal SIGKILL to SERVICE
+ - pidof: print the PID of the SERVICE, or return 1 if it's not up
+-- rescan: re-read `/etc/nitro`, start added daemons, stop removed daemons
++- rescan: re-read `/etc/nitro/services`, start added daemons, stop removed daemons
+ - Shutdown: shutdown (poweroff) the system
+ - Reboot: reboot the system
+ 
+@@ -184,7 +184,7 @@ the appropriate target.
+ You can add this line to `/etc/ttys` to run `nitro` supervised by
+ FreeBSD `init`:
+ 
+-	/etc/nitro "/usr/local/sbin/nitro" "" on
++	/etc/nitro/services "/usr/local/sbin/nitro" "" on
+ 
+ ## Periodic jobs
+ 
+diff --git a/nitro.8 b/nitro.8
+index ed8aac9..7c5ce10 100644
+--- a/nitro.8
++++ b/nitro.8
+@@ -13,7 +13,7 @@ is a service supervisor that can be used as a Unix init system.
+ .Pp
+ Every directory inside
+ .Ar dir
+-.Pq by default: Pa /etc/nitro
++.Pq by default: Pa /etc/nitro/services
+ defines a service.
+ .Pp
+ When used as init, and the argument
+diff --git a/nitro.c b/nitro.c
+index 9c9319b..f42e48e 100644
+--- a/nitro.c
++++ b/nitro.c
+@@ -139,6 +139,8 @@ int controlsock;
+ int nullfd;
+ int selfpipe[2];
+ int globallog[2];
++const char *ndir;		/*the base directory eg /etc/nitro*/
++char sdir[PATH_MAX];	/*the services directory eg realpath(/etc/nitro/services)*/
+ DIR *cwd;
+ DIR *notifydir;
+ char notifypath[256];
+@@ -294,6 +296,13 @@ panic()
+ #define dprn(...) /**/
+ #endif
+ 
++int
++services_realpath(char *tsdir){
++	char buf[PATH_MAX];
++	sprn(buf, buf + sizeof buf, "%s/services", ndir);
++	return realpath(buf,tsdir)!=NULL;
++}
++
+ int
+ stat_slash(const char *dir, const char *name, struct stat *st)
+ {
+@@ -1048,6 +1057,40 @@ refresh_log:
+ 	return i;
+ }
+ 
++int
++check_sdir(){
++	/*
++	 * check to see if the realpath of ndir has changed
++	 * and if yes fix up sdir and cwd
++	 * */
++	char tsdir[PATH_MAX];
++	int rval = 0;
++	/*check to see if the real path changed*/
++	if (!services_realpath(tsdir)){
++		dprn("check_services: '%s/services' is invalid\n", ndir);
++		rval = 1;
++	} else if(strcmp(sdir,tsdir)){
++		DIR	*tcwd=NULL;
++		dprn("services: '%s' --> '%s'\n", sdir, tsdir);
++		/*new services*/
++		if (chdir(tsdir) < 0){
++			dprn("chdir to '%s': errno=%d\n", sdir, errno);
++			rval = 2;
++		} else {
++			tcwd = opendir(".");
++			if (!tcwd){
++				dprn("opendir '%s': errno=%d\n", sdir, errno);
++				rval = 3;
++			} else {
++				closedir(cwd);	/*close current*/
++				cwd = tcwd;		/*set the globals*/
++				strncpy(sdir,tsdir,PATH_MAX);
++			}
++		}
++	}
++	return rval;
++}
++
+ void
+ rescan()
+ {
+@@ -1056,8 +1099,9 @@ rescan()
+ 		if (!strchr(services[i].name, '@'))
+ 			services[i].seen = 0;
+ 
+-	struct dirent *ent;
++	check_sdir();
+ 	rewinddir(cwd);
++	struct dirent *ent;
+ 	while ((ent = readdir(cwd))) {
+ 		char *name = ent->d_name;
+ 		struct stat st;
+@@ -1650,18 +1694,21 @@ main(int argc, char *argv[])
+ 			close(voidfd);
+ 	}
+ 
+-	const char *dir = "/etc/nitro";
++	ndir = "/etc/nitro";
+ 	if (argc == 2)
+-		dir = argv[1];
+-	if (real_pid1 && (strcmp(dir, "S") == 0 || strcmp(dir, "single") == 0))
+-		dir = "/etc/nitro.single";
++		ndir = argv[1];
++	if (real_pid1 && (strcmp(ndir, "S") == 0 || strcmp(ndir, "single") == 0))
++		ndir = "/etc/nitro.single";
+ 
+-	if (chdir(dir) < 0)
+-		fatal("chdir to '%s': errno=%d\n", dir, errno);
++	if(!services_realpath(sdir)){
++		fatal("bad realpath for %s/services: errno=%d\n", ndir, errno);
++		}
++	if (chdir(sdir) < 0)
++		fatal("chdir to '%s': errno=%d\n", sdir, errno);
+ 
+ 	cwd = opendir(".");
+ 	if (!cwd)
+-		fatal("opendir '%s': errno=%d\n", dir, errno);
++		fatal("opendir '%s': errno=%d\n", sdir, errno);
+ 
+ 	if (pipe2(selfpipe, O_NONBLOCK | O_CLOEXEC) < 0)
+ 		fatal("selfpipe pipe: errno=%d\n", errno);
+diff --git a/nitroctl.c b/nitroctl.c
+index 63bb1b9..5ec9cf6 100644
+--- a/nitroctl.c
++++ b/nitroctl.c
+@@ -337,7 +337,7 @@ main(int argc, char *argv[])
+ 			if (argc == 2)
+ 				chdir(argv[1]);
+ 			else
+-				chdir("/etc/nitro");
++				chdir("/etc/nitro/services");
+ 			execl("SYS/fatal", "SYS/fatal", (char *)0);
+ 			exit(111);
+ 		}
