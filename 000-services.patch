@@ -52,7 +52,7 @@ index ed8aac9..7c5ce10 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 9c9319b..f42e48e 100644
+index 4b43a77..43ee660 100644
 --- a/nitro.c
 +++ b/nitro.c
 @@ -139,6 +139,8 @@ int controlsock;
@@ -78,7 +78,7 @@ index 9c9319b..f42e48e 100644
  int
  stat_slash(const char *dir, const char *name, struct stat *st)
  {
-@@ -1048,6 +1057,40 @@ refresh_log:
+@@ -1061,6 +1070,40 @@ refresh_log:
  	return i;
  }
  
@@ -119,9 +119,9 @@ index 9c9319b..f42e48e 100644
  void
  rescan()
  {
-@@ -1056,8 +1099,9 @@ rescan()
- 		if (!strchr(services[i].name, '@'))
- 			services[i].seen = 0;
+@@ -1069,8 +1112,9 @@ rescan()
+ 	for (i = 0; i < max_service; i++)
+ 		services[i].seen = 0;
  
 -	struct dirent *ent;
 +	check_sdir();
@@ -130,7 +130,7 @@ index 9c9319b..f42e48e 100644
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
  		struct stat st;
-@@ -1650,18 +1694,21 @@ main(int argc, char *argv[])
+@@ -1672,18 +1716,21 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
@@ -160,15 +160,15 @@ index 9c9319b..f42e48e 100644
  	if (pipe2(selfpipe, O_NONBLOCK | O_CLOEXEC) < 0)
  		fatal("selfpipe pipe: errno=%d\n", errno);
 diff --git a/nitroctl.c b/nitroctl.c
-index 63bb1b9..5ec9cf6 100644
+index 1f86bbb..fc67010 100644
 --- a/nitroctl.c
 +++ b/nitroctl.c
-@@ -337,7 +337,7 @@ main(int argc, char *argv[])
- 			if (argc == 2)
- 				chdir(argv[1]);
- 			else
--				chdir("/etc/nitro");
-+				chdir("/etc/nitro/services");
+@@ -334,7 +334,7 @@ main(int argc, char *argv[])
+ 			execvp("nitro", argv);
+ 			dprintf(2, "nitroctl: exec init failed: %s\n", strerror(errno));
+ 
+-			if (chdir(argc == 2 ? argv[1] : "/etc/nitro") < 0)
++			if (chdir(argc == 2 ? argv[1] : "/etc/nitro/services") < 0)
+ 				dprintf(2, "nitroctl: chdir failed: %s\n", strerror(errno));
  			execl("SYS/fatal", "SYS/fatal", (char *)0);
- 			exit(111);
- 		}
+ 			dprintf(2, "nitroctl: exec SYS/fatal failed: %s\n", strerror(errno));

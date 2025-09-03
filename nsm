@@ -4,7 +4,7 @@
 
 # This version v0.0.0 by Robin Becker
 
-NSM_VERSION='0.0.0'
+NSM_VERSION='0.1.0'
 
 # nitro structure
 #
@@ -550,6 +550,10 @@ SVDIR="${SVDIR%/}"
 FLDIR="$(dirname ${SVDIR})/sv"
 LVLSDIR="$(dirname "$SVDIR")/levels"
 
+relpath(){
+	echo "$(realpath -m --relative-to="$2" "$1")"
+}
+
 link-state()
 	if [ -e "$SVDIR/$svc" ]; then
 		echo "enabled"
@@ -569,7 +573,7 @@ case "$cmd" in
 	(runlevel)
 		if [ -d "${LVLSDIR}/$1" ]; then
 			rm -f "${SVDIR%/}"
-			ln -sf "${LVLSDIR%/}/$1" "${SVDIR%/}"
+			ln -sf "levels/$1" "${SVDIR}"
 		else
 			echo "No such level '$1'" 1>&2
 		fi
@@ -602,7 +606,7 @@ case "$cmd" in
 			dst="$SVDIR/$svc"
 			[ -e "$dst" ] && rm -f "$dst"
 			[ -f "$src/down" ] && rm -f "$src/down"
-			ln -s "$src" "$dst"
+			ln -sf "$(relpath "$FLDIR" "$SVDIR")/$svc" "$dst"
 			verbose "##### $svc enabled"
 		done
 		exec "${0}" rescan -d "$SVDIR"
