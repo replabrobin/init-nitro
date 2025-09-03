@@ -345,10 +345,12 @@ filtered_services(){
 	nitroctl list | sort -k2 | while read line; do
 		line=($line)
 		svc="${line[1]}"
-		if [[ -n $filter && $svc != *"$filter"* ]]; then
+		if [ "${svc%@}" != "${svc}" ]; then
 			continue
 		fi
-		echo "$svc"
+		if [ -z "${filter}" || "${svc}" = "${filter}" ]; then
+			echo ${svc}
+		fi
 	done
 }
 
@@ -554,7 +556,7 @@ relpath(){
 	echo "$(realpath -m --relative-to="$2" "$1")"
 }
 
-link-state()
+link-state(){
 	if [ -e "$SVDIR/$svc" ]; then
 		echo "enabled"
 	elif [ -e "$FLDIR/$svc" ]; then
@@ -562,6 +564,7 @@ link-state()
 	else
 		echo "unknown"
 	fi
+}
 
 case "$cmd" in
 	(status)
@@ -666,16 +669,16 @@ case "$cmd" in
 			;;
 	(start|stop)
 		L=""
-		for a in "$@"; do
-			for svc in $(filtered_services "$a"); do
-				if nitroctl $cmd "$svc" >/dev/null 2>&1; then
-					L="$L $svc"
-				fi
-			done
+		B=""
+		for svc in "$@"; do
+			if nitroctl $cmd "$svc" >/dev/null 2>&1; then
+				L="$L $svc"
+			else
+				B="$B $svc"
+			fi
 		done
-		if [ -n "$L" ]; then
-			echo "${cmd}ed$L"
-		fi
+		if [ -n "$L" ]; then rmsg 0 "SUCCESS ${cmd}$L"; fi
+		if [ -n "$B" ]; then rmsg 1 "FAILED ${cmd}$B" 1>&2; fi
 		;;
 
 	(*)
