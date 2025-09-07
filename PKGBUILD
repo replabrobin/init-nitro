@@ -1,6 +1,6 @@
 pkgname=init-nitro
-pkgver=0.3.2
-_nrev="262dbc78535aa67cb5f7203a416e963b4f125282"
+pkgver=0.3.3
+_nrev="9507f103b43094261e5bd7aa8dcd7f03ea6036d6"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
@@ -28,16 +28,16 @@ source=(
 		"shutdown"
 		"nsm"
 		 )
-sha256sums=('7561afa869bf306603a1400d224f5da8b81cf6fffb088fc793823cec6ea1bee5'
+sha256sums=('6141b7ff7225e57b35afdd216aacc262956bdba2ff8680430fa185af0ab4ed93'
             'SKIP'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '191f7d0ad00183ab3a8820ca9bf4295de8af6d9bfa06571653e8fd3d8280e63a'
             '855e06a4faf72c096d8ffc988c17b2579ac3ba7f01c5f9e0b96df06768406cd0'
-            '9f4e17af710aa4155f17c25f1a59c346172bda94d7f9b3c7e29776ebb4e18305'
+            '6713250d63b176eaac047999a9fa00f8ed4829e167d4a73d51075c7ffdc4a5ba'
             '594819bda53593ac4ffbdc12e022786609177527d89d34e8675093a884e68a9a'
             '07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906'
-            'e24ed7060d754cd332ccbbd1454e2ac769a9dd75a44cc93b7f12bf501370bb43')
+            'a7ffdc781fa581dd9648aa16b331a950ef0177b3ce43c3a89ed928e8cd2a1a8f')
 validpgpkeys=()
 
 prepare() {
@@ -50,7 +50,11 @@ prepare() {
 
 	cd "$srcdir/admin/runit-${_rver}/src"
 	for x in "${srcdir}"/patches/*; do
-		patch -Np2 -i "$x" | (grep chpst || true)
+		if [ "$VERBOSE" = 1 ]; then
+			patch -Np2 -i "$x" 
+		else
+			patch -Np2 -i "$x" | (grep chpst || true)
+		fi
 	done
 }
 
@@ -70,7 +74,11 @@ build() {
 	CFLAGS="${CFLAGS} -static"
 	LDFLAGS="${LDFLAGS} -static"
 
-	package/compile |& (grep chpst || true)
+	if [ "$VERBOSE" = 1 ]; then
+		package/compile
+	else
+		package/compile |& (grep chpst || true)
+	fi
 }
 
 package() {

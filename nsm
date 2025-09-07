@@ -321,7 +321,7 @@ process_service() {
 	fi
 
 	# print service line
-	printf '%s%s%s %s%-20s%s %s%-7s%s %s%-9s%s %s%-8s%s %s%-17s%s %s%s%s\n' \
+	printf '%s%s%s %s%-20s%s %s%-8s%s %s%-5s%s %s%-8s%s %s%-20s%s %s%s%s\n' \
 	    "$statecolor"   "$char"           "$colorreset" \
 	    "$colorreset"   "$svc"            "$colorreset" \
 	    "$statecolor"   "$state"          "$colorreset" \
@@ -406,9 +406,9 @@ do_status() {
 	if [ -n "$table" ]; then
 		# table header
 		if $header; then
-			printf '%s  %-20s %-7s %-9s %-8s %-17s %s%s\n' \
+			printf '%s  %-20s %-8s %-5s %-8s %-20s %s%s\n' \
 				"$colorbold" \
-				'SERVICE' 'STATE' 'ENABLED' 'PID' 'COMMAND' 'TIME' \
+				'SERVICE' 'STATE' 'LIVE' 'PID' 'COMMAND' 'TIME' \
 				"$colorreset"
 		fi
 
