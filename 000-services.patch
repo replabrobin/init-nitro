@@ -52,7 +52,7 @@ index ed8aac9..7c5ce10 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 231e195..651cdd0 100644
+index 231e195..4f0fbab 100644
 --- a/nitro.c
 +++ b/nitro.c
 @@ -135,6 +135,8 @@ int controlsock;
@@ -130,16 +130,24 @@ index 231e195..651cdd0 100644
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
  		struct stat st;
-@@ -1388,7 +1432,7 @@ handle_control_sock()
+@@ -1382,16 +1426,9 @@ handle_control_sock()
+ 	case 'd':
+ 	case 'r':
+ 	{
+-		struct stat st;
+-
+ 		if (!buf[1])
  			goto fail;
  		int i = find_service(buf + 1);
- 		if (i < 0 &&
+-		if (i < 0 &&
 -		    buf[0] != 'd' &&
-+		    buf[0] != 'd' && buf[0] != 'u' &&
- 		    valid_service_name(buf + 1) &&
- 		    stat_slash_to_at(buf + 1, ".", &st) == 0)
- 			i = add_service(buf + 1);
-@@ -1697,18 +1741,21 @@ main(int argc, char *argv[])
+-		    valid_service_name(buf + 1) &&
+-		    stat_slash_to_at(buf + 1, ".", &st) == 0)
+-			i = add_service(buf + 1);
+ 		if (i < 0)
+ 			goto fail;
+ 		services[i].seen = 1;
+@@ -1697,18 +1734,21 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
