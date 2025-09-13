@@ -1,10 +1,10 @@
 pkgname=init-nitro
-pkgver=0.3.3
+pkgver=0.3.4
 _nrev="0b2ff27a7ab592cdc4794ae3f60c73591b21eb40"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=4
+pkgrel=1
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -33,11 +33,11 @@ sha256sums=('1f743e63a4ec5e063daa0a478ef42c6b44922eca83c53995e1c7fd97c076b6fa'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '191f7d0ad00183ab3a8820ca9bf4295de8af6d9bfa06571653e8fd3d8280e63a'
-            '855e06a4faf72c096d8ffc988c17b2579ac3ba7f01c5f9e0b96df06768406cd0'
-            '14fcde6b5bac80c111f2b25c922b75440213430fbf13439027c1eafd71d91b1f'
+            '5ba878a182e9f69eae2c00a87bb90879f598132025a6423adc6b97ce5199700d'
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
             '594819bda53593ac4ffbdc12e022786609177527d89d34e8675093a884e68a9a'
             '07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906'
-            'a7ffdc781fa581dd9648aa16b331a950ef0177b3ce43c3a89ed928e8cd2a1a8f')
+            '8192b2bbd073ce680a76235e884597023e3851717c57ea41a6353cf060e9d8ea')
 validpgpkeys=()
 
 prepare() {

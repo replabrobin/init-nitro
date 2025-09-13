@@ -163,9 +163,11 @@ enable <svc> [...]       $cr install service(s) into the service directory and s
 ${colorgreen}
 disable <svc> [...]      $cr stop and remove service(s) from the service directory
 ${colorgreen}
-create-user <user> [...] $cr create user(s) ie folders ~<user>/.config/nitro/
+create-user <user> [...] $cr create user(s) ie ln -s user@ $FLDIR/user@<user>
 ${colorgreen}
-delete-user <user> [...] $cr delete user(s) ~<user>/.config/nitro
+delete-user <user> [...] $cr delete user(s) ie remove service links
+${colorgreen}
+destroy-user <user> [...] $cr delete user(s) and remove ~<user>/.config/nitro
 
 
 Any other subcommand gets passed directly to the 'nitroctl' command, see nitroctl(1) for the
@@ -173,7 +175,10 @@ full list of subcommands and information about what each does specifically.
 Common subcommands:
 
 ${colorgreen}start <service>          $cr Start the service
+${colorgreen}fast-start <service>     $cr Start the service without waiting
+${colorgreen}up <service>             $cr Start the service without waiting
 ${colorgreen}stop <service>           $cr Stop the service
+${colorgreen}down <service>           $cr Stop using SIGTERM or first letter of ./down-signal
 ${colorgreen}restart <service>        $cr Restart the service
 ${colorgreen}reload <service>         $cr Reload the service (send SIGHUP)
 ${colorgreen}runlevel <level>         $cr stop current and start a new runlevel
@@ -419,18 +424,18 @@ do_status() {
 
 # handle any other subcommand
 do_nitroctl() {
-	if (($# < 2)); then
-		case "$1" in
-			(Shutdown|Reboot|rescan|list)
-				;;
-			(*)
-				rmsg -1 "Argument expected for 'nitroctl $1'"
-				return 1
-				;;
-			esac
-	fi
+	#if (($# < 2)); then
+	#	case "$1" in
+	#		(Shutdown|Reboot|rescan|list)
+	#			;;
+	#		(*)
+	#			rmsg -1 "Argument expected for 'nitroctl $1'"
+	#			return 1
+	#			;;
+	#		esac
+	#fi
 
-	#msg "Running sv command (SVDIR=$SVDIR sv $*):"
+	#msg "Running nitroctl command (SVDIR=$SVDIR nitoctl $@):"
 	nitroctl "$@"
 	local ret=$?
 	rmsg "$ret" "[nitroctl $@], exit code: $ret"
@@ -439,23 +444,41 @@ do_nitroctl() {
 
 #create a user framework
 create_user(){
+	if [ "$USERMODE" = "1" ]; then
+		echo "!!!!! cannot create-user in usermode"
+		exit 1
+	fi
 	local u="$1"
 	if ! id "$u" &> /dev/null ; then
 		echo "!!!!! no such user as '$u'"
 		exit 1
 	fi
-	local h="$(eval echo "~$u")"
-	mkdir -p "$h/.config/nitro/avail-svcs"
-	chown -R "$u:$u" "$h/.config/nitro"
+	local dst="$FLDIR/user@$u"
+	if [ -e "$dst" ]; then
+		echo "!!!!! '$dst' already exists"
+		exit 2
+	fi
+	ln -s "user@" "$dst"
 }
 delete_user(){
+	if [ "$USERMODE" = "1" ]; then
+		echo "!!!!! cannot $2 in usermode"
+		exit 1
+	fi
 	local u="$1"
 	if ! id "$u" &> /dev/null ; then
 		fatal "no such user as '$u'"
 	fi
-	local h="$(eval echo "~$u")"
-	sv stop user-$u &> /dev/null
-	rm -rf $h/.config/nitro
+	local dst="$FLDIR/user@$u"
+	if [ ! -e "$dst" ]; then
+		echo "!!!!! '$dst' does not exist"
+		exit 2
+	fi
+	rm "$dst"
+	if [ "$2" = "destroy-user" ]; then
+		local h="$(eval echo "~$u")"
+		rm -rf $h/.config/nitro
+	fi
 }
 
 color_arg=
@@ -499,6 +522,8 @@ while true; do
 			shift
 			cmd='status';;
 		(u) SVDIR=~/.config/nitro/services
+			USERMODE="1"
+			export NITRO_SOCK="$HOME/.config/nitro/run/nitro.sock"
 			do_sudo=0
 			;;
 		(v)	((verbosity++));;
@@ -664,10 +689,10 @@ case "$cmd" in
 	(create-user)
 			for user in "$@"; do create_user "$user"; done
 			;;
-	(delete-user)
-			for user in "$@"; do delete_user "$user"; done
+	(delete-user|destroy-user)
+			for user in "$@"; do delete_user "$user" "$cmd"; done
 			;;
-	(start|stop)
+	(start|stop|fast-start|restart|up|down)
 		L=""
 		B=""
 		for svc in "$@"; do
