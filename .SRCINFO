@@ -1,7 +1,7 @@
 pkgbase = init-nitro
 	pkgdesc = simple init
 	pkgver = 0.3.4
-	pkgrel = 1
+	pkgrel = 2
 	url = https://github.com/leahneukirchen/nitro
 	arch = x86_64
 	arch = aarch64
@@ -28,7 +28,7 @@ pkgbase = init-nitro
 	sha256sums = bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173
 	sha256sums = 191f7d0ad00183ab3a8820ca9bf4295de8af6d9bfa06571653e8fd3d8280e63a
 	sha256sums = 5ba878a182e9f69eae2c00a87bb90879f598132025a6423adc6b97ce5199700d
-	sha256sums = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+	sha256sums = 14fcde6b5bac80c111f2b25c922b75440213430fbf13439027c1eafd71d91b1f
 	sha256sums = 594819bda53593ac4ffbdc12e022786609177527d89d34e8675093a884e68a9a
 	sha256sums = 07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906
 	sha256sums = 8192b2bbd073ce680a76235e884597023e3851717c57ea41a6353cf060e9d8ea
