@@ -1,10 +1,10 @@
 pkgname=init-nitro
-pkgver=0.3.4
-_nrev="0b2ff27a7ab592cdc4794ae3f60c73591b21eb40"
+pkgver=0.3.5
+_nrev="518bf7ad7d32c19eabe19bb9540ab13d56ada3d9"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=2
+pkgrel=0
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -27,8 +27,11 @@ source=(
 		"001-runit-rc.patch"
 		"shutdown"
 		"nsm"
-		 )
-sha256sums=('1f743e63a4ec5e063daa0a478ef42c6b44922eca83c53995e1c7fd97c076b6fa'
+		"00-init-nitro-remove.hook"
+		"99-init-nitro-install.hook"
+		"init-nitro-script"
+		)
+sha256sums=('d7c12c58409a2723d8fa2c77d8cb99176936dab2d2e0319294d56f4883c525f2'
             'SKIP'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
@@ -37,7 +40,10 @@ sha256sums=('1f743e63a4ec5e063daa0a478ef42c6b44922eca83c53995e1c7fd97c076b6fa'
             '14fcde6b5bac80c111f2b25c922b75440213430fbf13439027c1eafd71d91b1f'
             '594819bda53593ac4ffbdc12e022786609177527d89d34e8675093a884e68a9a'
             '07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906'
-            '8192b2bbd073ce680a76235e884597023e3851717c57ea41a6353cf060e9d8ea')
+            'bad320acb9dd3aca65a0c835bf4693f8db1e677557b99744a0869924dd4fcbc7'
+            'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
+            '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'
+            '2d6a2fe22915f5f79ee83ac1c94bfa6590c13ee22e8431755d355b4041699d62')
 validpgpkeys=()
 
 prepare() {
@@ -89,6 +95,9 @@ package() {
 	install -Dm755 nitro ${pkgdir}/usr/bin/nitro
 	install -Dm755 nitroctl ${pkgdir}/usr/bin/nitroctl
 	install -Dm755 ${srcdir}/shutdown ${pkgdir}/usr/bin/shutdown
+	install -Dm755 ${srcdir}/init-nitro-script "${pkgdir}/usr/share/libalpm/scripts/init-nitro-script"
+	install -Dm644 ${srcdir}/00-init-nitro-remove.hook "${pkgdir}/usr/share/libalpm/hooks/00-init-nitro-remove.hook"
+	install -Dm644 ${srcdir}/99-init-nitro-install.hook "${pkgdir}/usr/share/libalpm/hooks/99-init-nitro-install.hook"
 	for x in halt poweroff reboot; do ln -s shutdown ${pkgdir}/usr/bin/$x;done
 	install -Dm755 ${srcdir}/nsm ${pkgdir}/usr/bin/nsm
 	install -Dm755 ${srcdir}/admin/runit-2.2.0/command/chpst ${pkgdir}/usr/bin/chpst
@@ -96,8 +105,8 @@ package() {
 	# man pages
 	install -dm755 "${pkgdir}/usr/share/man/man1"
 	install -dm755 "${pkgdir}/usr/share/man/man8"
-	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitroctl.1 "${pkgdir}/usr/share/man/man8"
-	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitro.8 "${pkgdir}/usr/share/man/man1"
+	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitroctl.1 "${pkgdir}/usr/share/man/man1/nitroctl.1"
+	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitro.8 "${pkgdir}/usr/share/man/man8/nitro.8"
 
 	cd $srcdir/runit-rc
 	make DESTDIR="${pkgdir}" install-rc

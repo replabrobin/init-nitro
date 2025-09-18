@@ -602,6 +602,7 @@ case "$cmd" in
 		if [ -d "${LVLSDIR}/$1" ]; then
 			rm -f "${SVDIR%/}"
 			ln -sf "levels/$1" "${SVDIR}"
+			do_nitroctl rescan
 		else
 			echo "No such level '$1'" 1>&2
 		fi

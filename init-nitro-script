@@ -1,0 +1,14 @@
+#!/bin/bash
+case "$1" in
+	(install)
+			if [ -h "/bin/init" ]; then
+				echo "##### replacing /bin/init --> $(readlink /bin/init)"
+			fi
+			rm /bin/init
+			ln -s nitro /bin/init
+			;;
+	(remove)
+			echo "##### removed /bin/init --> $(readlink /bin/init)"
+			rm /bin/init
+			;;
+esac

@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = init-nitro
+
+[Action]
+Description = fix up /usr/bin/init
+When = PostTransaction
+Exec = /usr/share/libalpm/scripts/init-nitro-script install
