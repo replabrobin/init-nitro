@@ -4,11 +4,11 @@ case "$1" in
 			if [ -h "/bin/init" ]; then
 				echo "##### replacing /bin/init --> $(readlink /bin/init)"
 			fi
-			rm /bin/init
+			rm -f /bin/init
 			ln -s nitro /bin/init
 			;;
 	(remove)
 			echo "##### removed /bin/init --> $(readlink /bin/init)"
-			rm /bin/init
+			rm -f /bin/init
 			;;
 esac
