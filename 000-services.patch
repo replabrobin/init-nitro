@@ -52,10 +52,10 @@ index f484baa..391d0b1 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 388992d..a64f723 100644
+index 66974d9..738a246 100644
 --- a/nitro.c
 +++ b/nitro.c
-@@ -139,6 +139,8 @@ int controlsock;
+@@ -139,11 +139,12 @@ int controlsock;
  int nullfd;
  int selfpipe[2];
  int globallog[2];
@@ -64,7 +64,12 @@ index 388992d..a64f723 100644
  DIR *cwd;
  DIR *notifydir;
  char notifypath[256];
-@@ -294,6 +296,13 @@ panic()
+ const char *control_socket_path;
+-const char *servicedir = "/etc/nitro";
+ 
+ long total_reaps;
+ long total_sv_reaps;
+@@ -302,6 +303,13 @@ panic()
  #define dprn(...) {}
  #endif
  
@@ -78,10 +83,35 @@ index 388992d..a64f723 100644
  int
  stat_slash(const char *dir, const char *name, struct stat *st)
  {
-@@ -1128,6 +1137,40 @@ refresh_log:
+@@ -1135,36 +1143,42 @@ refresh_log:
  	return i;
  }
  
+-static void
+-reopendir(DIR **d)
+-{
+-#ifdef REOPEN_USE_CLOSEDIR
+-	DIR *newd = opendir(servicedir);
+-	if (!newd)
+-		return;
+-	closedir(*d);
+-	*d = newd;
+-	(void)!fchdir(dirfd(newd));
+-#else
+-
+-	// avoid OpenBSD bug: ensure we hit end, so rewinddir forces re-read.
+-	while (readdir(*d))
+-		;
+-
+-#ifdef REOPEN_USE_DUP_HACK
+-	// this fiddles in the internals of DIR, use only if you vetted
+-	// your libc to tolerate this!
+-	int fd = open(servicedir, O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+-	if (fd >= 0) {
+-		if (dup3(fd, dirfd(*d), O_CLOEXEC) < 0)
+-			close(fd);
+-		else
+-			(void)!fchdir(dirfd(*d));
 +int
 +check_sdir(){
 +	/*
@@ -112,25 +142,31 @@ index 388992d..a64f723 100644
 +				strncpy(sdir,tsdir,PATH_MAX);
 +			}
 +		}
-+	}
++	} else {
++		// avoid OpenBSD bug: ensure we hit end, so rewinddir forces re-read.
++		while (readdir(cwd))
++			;
+ 	}
+-#endif
+-
+-	rewinddir(*d);
+-#endif
 +	return rval;
-+}
-+
+ }
+ 
  void
- rescan()
- {
-@@ -1136,8 +1179,9 @@ rescan()
+@@ -1175,8 +1189,8 @@ rescan()
  	for (i = 0; i < max_service; i++)
  		services[i].seen = 0;
  
--	struct dirent *ent;
+-	reopendir(&cwd);
+-
 +	check_sdir();
- 	rewinddir(cwd);
-+	struct dirent *ent;
++	rewinddir(cwd);
+ 	struct dirent *ent;
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
- 		struct stat st;
-@@ -1478,16 +1522,9 @@ handle_control_sock()
+@@ -1518,16 +1532,9 @@ handle_control_sock()
  	case 'd':
  	case 'r':
  	{
@@ -147,31 +183,32 @@ index 388992d..a64f723 100644
  		if (i < 0)
  			goto fail;
  		services[i].seen = 1;
-@@ -1793,18 +1830,21 @@ main(int argc, char *argv[])
+@@ -1833,17 +1840,21 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
--	const char *dir = "/etc/nitro";
 +	ndir = "/etc/nitro";
  	if (argc == 2)
--		dir = argv[1];
--	if (real_pid1 && (strcmp(dir, "S") == 0 || strcmp(dir, "single") == 0))
--		dir = "/etc/nitro.single";
+-		servicedir = argv[1];
+-	if (real_pid1 && (strcmp(servicedir, "S") == 0 || strcmp(servicedir, "single") == 0))
+-		servicedir = "/etc/nitro.single";
 +		ndir = argv[1];
 +	if (real_pid1 && (strcmp(ndir, "S") == 0 || strcmp(ndir, "single") == 0))
 +		ndir = "/etc/nitro.single";
  
--	if (chdir(dir) < 0)
--		fatal("chdir to '%s': errno=%d\n", dir, errno);
+-	cwd = opendir(servicedir);
+-	if (!cwd)
+-		fatal("opendir '%s': errno=%d\n", servicedir, errno);
 +	if(!services_realpath(sdir)){
 +		fatal("bad realpath for %s/services: errno=%d\n", ndir, errno);
 +		}
 +	if (chdir(sdir) < 0)
 +		fatal("chdir to '%s': errno=%d\n", sdir, errno);
  
- 	cwd = opendir(".");
- 	if (!cwd)
--		fatal("opendir '%s': errno=%d\n", dir, errno);
+-	if (fchdir(dirfd(cwd)) < 0)
+-		fatal("fchdir to '%s': errno=%d\n", servicedir, errno);
++	cwd = opendir(".");
++	if (!cwd)
 +		fatal("opendir '%s': errno=%d\n", sdir, errno);
  
  	if (pipe2(selfpipe, O_NONBLOCK | O_CLOEXEC) < 0)

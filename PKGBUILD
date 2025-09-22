@@ -1,15 +1,15 @@
 pkgname=init-nitro
-pkgver=0.3.5
-_nrev="518bf7ad7d32c19eabe19bb9540ab13d56ada3d9"
+pkgver=0.4.0
+_nrev="a27bd3c83eda5b37066fbdb287b7bdfdd5a80b09"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=2
+pkgrel=0
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
 license=('GPL')
-#provides=('runit')
+provides=('nitro')
 depends=('glibc' 'bash')
 conflicts=('runit' 'runit-rc' 'svc-manager' 'eudev-runit')
 makedepends=()
@@ -31,13 +31,13 @@ source=(
 		"99-init-nitro-install.hook"
 		"init-nitro-script"
 		)
-sha256sums=('d7c12c58409a2723d8fa2c77d8cb99176936dab2d2e0319294d56f4883c525f2'
+sha256sums=('c4cd38a04cf147ee3ee370fdc5afcbd8eab20de5105d381b6f303cd9d86afa80'
             'SKIP'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '191f7d0ad00183ab3a8820ca9bf4295de8af6d9bfa06571653e8fd3d8280e63a'
             '136c5304ac91f510665160ffd68499fa1870c6a5d5ae303768b6e9a57f39d791'
-            '14fcde6b5bac80c111f2b25c922b75440213430fbf13439027c1eafd71d91b1f'
+            '1f9d691b1c16da0de9d347a4572001c8fc90651e546313bdf725d29f24283d38'
             '594819bda53593ac4ffbdc12e022786609177527d89d34e8675093a884e68a9a'
             '07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906'
             'bad320acb9dd3aca65a0c835bf4693f8db1e677557b99744a0869924dd4fcbc7'
