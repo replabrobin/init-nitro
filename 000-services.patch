@@ -52,20 +52,16 @@ index f484baa..391d0b1 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 66974d9..738a246 100644
+index 410bd85..cb37167 100644
 --- a/nitro.c
 +++ b/nitro.c
-@@ -139,11 +139,12 @@ int controlsock;
- int nullfd;
- int selfpipe[2];
- int globallog[2];
-+const char *ndir;		/*the base directory eg /etc/nitro*/
-+char sdir[PATH_MAX];	/*the services directory eg realpath(/etc/nitro/services)*/
- DIR *cwd;
+@@ -143,7 +143,8 @@ DIR *cwd;
  DIR *notifydir;
  char notifypath[256];
  const char *control_socket_path;
 -const char *servicedir = "/etc/nitro";
++char servicedir[PATH_MAX];	/*the services directory eg realpath(/etc/nitro/services)*/
++const char *basedir;			/*the base directory eg /etc/nitro*/
  
  long total_reaps;
  long total_sv_reaps;
@@ -76,14 +72,14 @@ index 66974d9..738a246 100644
 +int
 +services_realpath(char *tsdir){
 +	char buf[PATH_MAX];
-+	sprn(buf, buf + sizeof buf, "%s/services", ndir);
++	sprn(buf, buf + sizeof buf, "%s/services", basedir);
 +	return realpath(buf,tsdir)!=NULL;
 +}
 +
  int
  stat_slash(const char *dir, const char *name, struct stat *st)
  {
-@@ -1135,36 +1143,42 @@ refresh_log:
+@@ -1135,36 +1143,40 @@ refresh_log:
  	return i;
  }
  
@@ -115,32 +111,30 @@ index 66974d9..738a246 100644
 +int
 +check_sdir(){
 +	/*
-+	 * check to see if the realpath of ndir has changed
-+	 * and if yes fix up sdir and cwd
++	 * check to see if the realpath of basedir has changed
++	 * and if yes fix up servicedir and cwd
 +	 * */
 +	char tsdir[PATH_MAX];
 +	int rval = 0;
 +	/*check to see if the real path changed*/
 +	if (!services_realpath(tsdir)){
-+		dprn("check_services: '%s/services' is invalid\n", ndir);
++		dprn("check_services: '%s/services' is invalid\n", basedir);
 +		rval = 1;
-+	} else if(strcmp(sdir,tsdir)){
++	} else if(strcmp(servicedir,tsdir)){
 +		DIR	*tcwd=NULL;
-+		dprn("services: '%s' --> '%s'\n", sdir, tsdir);
++		dprn("services: '%s' --> '%s'\n", servicedir, tsdir);
 +		/*new services*/
-+		if (chdir(tsdir) < 0){
-+			dprn("chdir to '%s': errno=%d\n", sdir, errno);
++		tcwd = opendir(tsdir);
++		if (!tcwd){
++			dprn("opendir '%s': errno=%d\n", tsdir, errno);
 +			rval = 2;
-+		} else {
-+			tcwd = opendir(".");
-+			if (!tcwd){
-+				dprn("opendir '%s': errno=%d\n", sdir, errno);
++		} else if (fchdir(dirfd(tcwd)) < 0){
++				dprn("chdir to '%s': errno=%d\n", tsdir, errno);
 +				rval = 3;
-+			} else {
-+				closedir(cwd);	/*close current*/
-+				cwd = tcwd;		/*set the globals*/
-+				strncpy(sdir,tsdir,PATH_MAX);
-+			}
++		} else {
++			closedir(cwd);	/*close current*/
++			cwd = tcwd;		/*set the globals*/
++			strncpy(servicedir,tsdir,PATH_MAX);
 +		}
 +	} else {
 +		// avoid OpenBSD bug: ensure we hit end, so rewinddir forces re-read.
@@ -155,7 +149,7 @@ index 66974d9..738a246 100644
  }
  
  void
-@@ -1175,8 +1189,8 @@ rescan()
+@@ -1175,8 +1187,8 @@ rescan()
  	for (i = 0; i < max_service; i++)
  		services[i].seen = 0;
  
@@ -166,7 +160,7 @@ index 66974d9..738a246 100644
  	struct dirent *ent;
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
-@@ -1518,16 +1532,9 @@ handle_control_sock()
+@@ -1520,16 +1532,9 @@ handle_control_sock()
  	case 'd':
  	case 'r':
  	{
@@ -183,36 +177,24 @@ index 66974d9..738a246 100644
  		if (i < 0)
  			goto fail;
  		services[i].seen = 1;
-@@ -1833,17 +1840,21 @@ main(int argc, char *argv[])
+@@ -1837,10 +1842,13 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
-+	ndir = "/etc/nitro";
- 	if (argc == 2)
+-	if (argc == 2)
 -		servicedir = argv[1];
 -	if (real_pid1 && (strcmp(servicedir, "S") == 0 || strcmp(servicedir, "single") == 0))
 -		servicedir = "/etc/nitro.single";
-+		ndir = argv[1];
-+	if (real_pid1 && (strcmp(ndir, "S") == 0 || strcmp(ndir, "single") == 0))
-+		ndir = "/etc/nitro.single";
- 
--	cwd = opendir(servicedir);
--	if (!cwd)
--		fatal("opendir '%s': errno=%d\n", servicedir, errno);
-+	if(!services_realpath(sdir)){
-+		fatal("bad realpath for %s/services: errno=%d\n", ndir, errno);
++	basedir = (argc == 2) ? argv[1] : "/etc/nitro";
++	if (real_pid1 && (strcmp(basedir, "S") == 0 || strcmp(basedir, "single") == 0))
++		basedir = "/etc/nitro.single";
++
++	if(!services_realpath(servicedir)){
++		fatal("bad realpath for %s/services: errno=%d\n", basedir, errno);
 +		}
-+	if (chdir(sdir) < 0)
-+		fatal("chdir to '%s': errno=%d\n", sdir, errno);
  
--	if (fchdir(dirfd(cwd)) < 0)
--		fatal("fchdir to '%s': errno=%d\n", servicedir, errno);
-+	cwd = opendir(".");
-+	if (!cwd)
-+		fatal("opendir '%s': errno=%d\n", sdir, errno);
- 
- 	if (pipe2(selfpipe, O_NONBLOCK | O_CLOEXEC) < 0)
- 		fatal("selfpipe pipe: errno=%d\n", errno);
+ 	cwd = opendir(servicedir);
+ 	if (!cwd)
 diff --git a/nitroctl.c b/nitroctl.c
 index 2a90b50..5ff7c25 100644
 --- a/nitroctl.c

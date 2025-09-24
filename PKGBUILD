@@ -1,6 +1,6 @@
 pkgname=init-nitro
-pkgver=0.4.0
-_nrev="a27bd3c83eda5b37066fbdb287b7bdfdd5a80b09"
+pkgver=0.4.1
+_nrev="150ca52ac0fe880deeaf6f899502820d4db82b6e"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
@@ -31,14 +31,14 @@ source=(
 		"99-init-nitro-install.hook"
 		"init-nitro-script"
 		)
-sha256sums=('c4cd38a04cf147ee3ee370fdc5afcbd8eab20de5105d381b6f303cd9d86afa80'
+sha256sums=('557688775cbdcd9981526aaad79f29b900f425e534db096eb48daecda4c0483a'
             'SKIP'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '191f7d0ad00183ab3a8820ca9bf4295de8af6d9bfa06571653e8fd3d8280e63a'
-            '136c5304ac91f510665160ffd68499fa1870c6a5d5ae303768b6e9a57f39d791'
-            '1f9d691b1c16da0de9d347a4572001c8fc90651e546313bdf725d29f24283d38'
-            '594819bda53593ac4ffbdc12e022786609177527d89d34e8675093a884e68a9a'
+            '5899375d43b7849be3bfe674858cbfbad6242755354bb23c9b9d4cfe0a572c9c'
+            'e453e6ffe63e128d1ae4708f1b380f711872e84d42c91492cb8a32a991d6fdc8'
+            '42e5c1fbbc9aa7075a48d29e03d3f4f143d9ab7a517a540c575e6994473c645d'
             '07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906'
             'bad320acb9dd3aca65a0c835bf4693f8db1e677557b99744a0869924dd4fcbc7'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
@@ -52,14 +52,14 @@ prepare() {
 	cd $pkgname-$pkgver
 	patch -Np1 -i "$srcdir"/000-services.patch
 	cd "$srcdir/runit-rc"
-	patch -Np1 -i "$srcdir"/001-runit-rc.patch
+	#patch -Np1 -i "$srcdir"/001-runit-rc.patch
 
 	cd "$srcdir/admin/runit-${_rver}/src"
 	for x in "${srcdir}"/patches/*; do
 		if [ "$VERBOSE" = 1 ]; then
 			patch -Np2 -i "$x" 
 		else
-			patch -Np2 -i "$x" | (grep chpst || true)
+			patch -Np2 -i "$x" | (grep -e "chpst" -e"utmpset" || true)
 		fi
 	done
 }
@@ -83,7 +83,7 @@ build() {
 	if [ "$VERBOSE" = 1 ]; then
 		package/compile
 	else
-		package/compile |& (grep chpst || true)
+		package/compile |& (grep -e "chpst" -e "utmpset" || true)
 	fi
 }
 
@@ -100,13 +100,16 @@ package() {
 	install -Dm644 ${srcdir}/99-init-nitro-install.hook "${pkgdir}/usr/share/libalpm/hooks/99-init-nitro-install.hook"
 	for x in halt poweroff reboot; do ln -s shutdown ${pkgdir}/usr/bin/$x;done
 	install -Dm755 ${srcdir}/nsm ${pkgdir}/usr/bin/nsm
-	install -Dm755 ${srcdir}/admin/runit-2.2.0/command/chpst ${pkgdir}/usr/bin/chpst
+	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/chpst ${pkgdir}/usr/bin/chpst
+	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/utmpset ${pkgdir}/usr/bin/utmpset
 
 	# man pages
 	install -dm755 "${pkgdir}/usr/share/man/man1"
 	install -dm755 "${pkgdir}/usr/share/man/man8"
 	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitroctl.1 "${pkgdir}/usr/share/man/man1/nitroctl.1"
 	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitro.8 "${pkgdir}/usr/share/man/man8/nitro.8"
+	install -Dm644 ${srcdir}/admin/runit-${_rver}/man/chpst.8 "${pkgdir}/usr/share/man/man8/chpst.8"
+	install -Dm644 ${srcdir}/admin/runit-${_rver}/man/utmpset.8 "${pkgdir}/usr/share/man/man8/utmpset.8"
 
 	cd $srcdir/runit-rc
 	make DESTDIR="${pkgdir}" install-rc
