@@ -4,7 +4,7 @@ _nrev="150ca52ac0fe880deeaf6f899502820d4db82b6e"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=0
+pkgrel=1
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -36,7 +36,7 @@ sha256sums=('557688775cbdcd9981526aaad79f29b900f425e534db096eb48daecda4c0483a'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '191f7d0ad00183ab3a8820ca9bf4295de8af6d9bfa06571653e8fd3d8280e63a'
-            '5899375d43b7849be3bfe674858cbfbad6242755354bb23c9b9d4cfe0a572c9c'
+            '3be45d4a6e42ca33bec1ed86dcbfabd70219ab670f3a1dab8bde6cd3ddfdb1d2'
             'e453e6ffe63e128d1ae4708f1b380f711872e84d42c91492cb8a32a991d6fdc8'
             '42e5c1fbbc9aa7075a48d29e03d3f4f143d9ab7a517a540c575e6994473c645d'
             '07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906'
@@ -65,8 +65,11 @@ prepare() {
 }
 
 build() {
+	local icflags="${CFLAGS}"
 	cd $pkgname-$pkgver
+	[ -n "$DEBUG" ] && CFLAGS="${icflags} -DDEBUG=${DEBUG}"
 	make
+	CFLAGS="${icflags}"
 	cd "${srcdir}/runit-rc"
 	make
 	#from runit pkg
