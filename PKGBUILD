@@ -1,10 +1,10 @@
 pkgname=init-nitro
 pkgver=0.4.1
-_nrev="150ca52ac0fe880deeaf6f899502820d4db82b6e"
+_nrev="ee28f6a27c335b1f4b8895c9fb0126000d997be7"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=1
+pkgrel=2
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -31,7 +31,7 @@ source=(
 		"99-init-nitro-install.hook"
 		"init-nitro-script"
 		)
-sha256sums=('557688775cbdcd9981526aaad79f29b900f425e534db096eb48daecda4c0483a'
+sha256sums=('bb2a5b223919edf41ce82fd89bcd89ba437ccaebc93e46d20b86249c0456eb8a'
             'SKIP'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
