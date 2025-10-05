@@ -1,10 +1,10 @@
 pkgname=init-nitro
 pkgver=0.4.1
-_nrev="ee28f6a27c335b1f4b8895c9fb0126000d997be7"
+_nrev="925efae8c37b67dbcd1a825ab0508cccf733e0e9"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=2
+pkgrel=3
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -31,16 +31,16 @@ source=(
 		"99-init-nitro-install.hook"
 		"init-nitro-script"
 		)
-sha256sums=('bb2a5b223919edf41ce82fd89bcd89ba437ccaebc93e46d20b86249c0456eb8a'
+sha256sums=('a583ae021928b90d575fc3b2b6845d01a86a7151dce80127dc8fe1c2f733f7f8'
             'SKIP'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '191f7d0ad00183ab3a8820ca9bf4295de8af6d9bfa06571653e8fd3d8280e63a'
             '3be45d4a6e42ca33bec1ed86dcbfabd70219ab670f3a1dab8bde6cd3ddfdb1d2'
-            'e453e6ffe63e128d1ae4708f1b380f711872e84d42c91492cb8a32a991d6fdc8'
+            '68748615919746a6c4c766e0f17768c711451559a63489def1f436ce6835472d'
             '42e5c1fbbc9aa7075a48d29e03d3f4f143d9ab7a517a540c575e6994473c645d'
             '07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906'
-            'bad320acb9dd3aca65a0c835bf4693f8db1e677557b99744a0869924dd4fcbc7'
+            'eb31194f5f181e58225fb73833a110fafabeb28d7b149cac2cf80242851a284f'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
             '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'
             '979b592f12348e49f7543ad539780af5b6fa7b8d3c3669ca6d683894128be26f')

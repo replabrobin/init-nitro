@@ -4,7 +4,7 @@
 
 # This version v0.0.0 by Robin Becker
 
-NSM_VERSION='0.1.0'
+NSM_VERSION='0.2.0'
 
 # nitro structure
 #
@@ -137,13 +137,14 @@ $logo   $colorblue Author: replabrobin
 
 ${coloryellow}USAGE:${colorgreen}
 $PROG [OPTIONS] [SUBCOMMAND] [<ARGS>]
-$PROG [-u] [-d <dir>] [-h] [-t] [SUBCOMMAND] [...]
+$PROG [-u] [-d <dir>] [-h] [-s] [-v] [-t] [SUBCOMMAND] [...]
 
 ${coloryellow}OPTIONS:${colorgreen}
 ${colorgreen}-c <yes|no|auto>         $cr Enable/disable color output, defaults to auto
 ${colorgreen}-d <dir>                 $cr service directory, defaults to env SVDIR or /etc/nitro/services if unset
 ${colorgreen}-h                       $cr Print this message and exit
 ${colorgreen}-l                       $cr Show log processes, this is a shortcut for 'status -l'
+${colorgreen}-s                       $cr slow/single mode for start, stop and similar
 ${colorgreen}-t<topts>                $cr Tree view, this is a shortcut for 'status -t with optional tree opts'
 ${colorgreen}-u                       $cr User mode, this is a shortcut for '-d ~/.config/nitro/'
 ${colorgreen}-v                       $cr Increase verbosity
@@ -174,13 +175,13 @@ Any other subcommand gets passed directly to the 'nitroctl' command, see nitroct
 full list of subcommands and information about what each does specifically.
 Common subcommands:
 
-${colorgreen}start <service>          $cr Start the service
-${colorgreen}fast-start <service>     $cr Start the service without waiting
-${colorgreen}up <service>             $cr Start the service without waiting
-${colorgreen}stop <service>           $cr Stop the service
-${colorgreen}down <service>           $cr Stop using SIGTERM or first letter of ./down-signal
-${colorgreen}restart <service>        $cr Restart the service
-${colorgreen}reload <service>         $cr Reload the service (send SIGHUP)
+${colorgreen}start <services>         $cr Start services
+${colorgreen}fast-start <services>    $cr Start services without waiting
+${colorgreen}up <services>            $cr Start services without waiting
+${colorgreen}stop <services>          $cr Stop services
+${colorgreen}down <services>          $cr Stop using SIGTERM or first letter of ./down-signal
+${colorgreen}restart <services>       $cr Restart the services
+${colorgreen}reload <service>         $cr Reload the services (send SIGHUP)
 ${colorgreen}runlevel <level>         $cr stop current and start a new runlevel
 ${colorgreen}runlevels                $cr list runlevel dirs
 ${colorgreen}logs <service>           $cr Outputs the service's logfilenames and their access & error logs from /var/log/<serice>/
@@ -424,19 +425,8 @@ do_status() {
 
 # handle any other subcommand
 do_nitroctl() {
-	#if (($# < 2)); then
-	#	case "$1" in
-	#		(Shutdown|Reboot|rescan|list)
-	#			;;
-	#		(*)
-	#			rmsg -1 "Argument expected for 'nitroctl $1'"
-	#			return 1
-	#			;;
-	#		esac
-	#fi
-
 	#msg "Running nitroctl command (SVDIR=$SVDIR nitoctl $@):"
-	nitroctl "$@"
+	nitroctl ${_nv} "$@"
 	local ret=$?
 	rmsg "$ret" "[nitroctl $@], exit code: $ret"
 	return "$ret"
@@ -487,6 +477,7 @@ tree=false
 log=false
 do_usage=-1
 verbosity=0
+slow=false
 msg=""
 if [ "$(whoami)" != "root" ]; then
 	do_sudo=1
@@ -506,6 +497,7 @@ while true; do
 		(d) SVDIR="$2";shift;;
 		(h) do_usage=0;;
 		(N) header=false;;
+		(s) slow=trie;;
 		(t) tree=true;
 			topts=""
 			n=${#2}
@@ -534,6 +526,12 @@ while true; do
 	shift
 done
 
+
+if ((verbosity>1)); then
+	_nv="-v"
+else
+	_nv=""
+fi
 if false; then
 	echo "##### start $(whoami)"
 	echo "color_arg=$color_arg"
@@ -542,6 +540,7 @@ if false; then
 	echo "tree=$tree"
 	echo "do_sudo=$do_sudo"
 	echo "verbosity=$verbosity"
+	echo "_nv=$_nv"
 	i=0;for x in "$@"; do i=$((i+1));echo "arg $i = '$x'"; done
 fi
 
@@ -650,7 +649,7 @@ case "$cmd" in
 			if [ ! -e "$dst" ]; then
 				verbose "!!!!! $svc not enabled"
 			else
-				nitroctl stop "$svc"
+				nitroctl ${_nv} stop "$svc"
 				rm -f "$dst"
 				src="$FLDIR/$svc"
 				[ -f "$src/down" ] && rm -f "$src/down"
@@ -667,7 +666,7 @@ case "$cmd" in
 			fi
 			tmp=$(link-state "$svc")
 			if [ "$tmp" = "enabled" ]; then
-				if nitroctl check "$svc"; then
+				if nitroctl ${_nv} check "$svc"; then
 					echo 'active'
 				else
 					echo 'inactive'
@@ -694,17 +693,26 @@ case "$cmd" in
 			for user in "$@"; do delete_user "$user" "$cmd"; done
 			;;
 	(start|stop|fast-start|restart|up|down)
-		L=""
-		B=""
-		for svc in "$@"; do
-			if nitroctl $cmd "$svc" >/dev/null 2>&1; then
-				L="$L $svc"
+		if $slow; then
+			L=""
+			B=""
+			for svc in "$@"; do
+				if nitroctl ${_nv} $cmd "$svc" >/dev/null 2>&1; then
+					L="$L $svc"
+				else
+					B="$B $svc"
+				fi
+			done
+			if [ -n "$L" ]; then rmsg 0 "SUCCESS ${cmd}$L"; fi
+			if [ -n "$B" ]; then rmsg 1 "FAILED ${cmd}$B" 1>&2; fi
+		else
+			echo nitroctl ${_nv} $cmd "$@"
+			if nitroctl ${_nv} $cmd "$@"; then
+				rmsg 0 "SUCCESS"
 			else
-				B="$B $svc"
+				rmsg 1 "FAILED" 1>&2
 			fi
-		done
-		if [ -n "$L" ]; then rmsg 0 "SUCCESS ${cmd}$L"; fi
-		if [ -n "$B" ]; then rmsg 1 "FAILED ${cmd}$B" 1>&2; fi
+		fi
 		;;
 
 	(*)
