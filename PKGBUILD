@@ -4,7 +4,7 @@ _nrev="925efae8c37b67dbcd1a825ab0508cccf733e0e9"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=3
+pkgrel=4
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -39,7 +39,7 @@ sha256sums=('a583ae021928b90d575fc3b2b6845d01a86a7151dce80127dc8fe1c2f733f7f8'
             '3be45d4a6e42ca33bec1ed86dcbfabd70219ab670f3a1dab8bde6cd3ddfdb1d2'
             '68748615919746a6c4c766e0f17768c711451559a63489def1f436ce6835472d'
             '42e5c1fbbc9aa7075a48d29e03d3f4f143d9ab7a517a540c575e6994473c645d'
-            '07aecac5688b90e9ba4c0b169175fc8d359a393b7f011ae39cac570242bdb906'
+            '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
             'eb31194f5f181e58225fb73833a110fafabeb28d7b149cac2cf80242851a284f'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
             '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'
@@ -73,7 +73,7 @@ build() {
 	cd "${srcdir}/runit-rc"
 	make
 	#from runit pkg
-	#cc ${CFLAGS} halt.c -o halt ${LDFLAGS}
+	#cc ${CFLAGS} ${srcdir}/halt.c -o ${srcdir}/halt ${LDFLAGS}
 
 	#cd ${_pkgname}
 	#make SERVICEDIR="${_servicedir}"
@@ -101,10 +101,11 @@ package() {
 	install -Dm755 ${srcdir}/init-nitro-script "${pkgdir}/usr/share/libalpm/scripts/init-nitro-script"
 	install -Dm644 ${srcdir}/00-init-nitro-remove.hook "${pkgdir}/usr/share/libalpm/hooks/00-init-nitro-remove.hook"
 	install -Dm644 ${srcdir}/99-init-nitro-install.hook "${pkgdir}/usr/share/libalpm/hooks/99-init-nitro-install.hook"
-	for x in halt poweroff reboot; do ln -s shutdown ${pkgdir}/usr/bin/$x;done
+	for x in halt poweroff reboot; do ln -s nitroctl ${pkgdir}/usr/bin/$x;done
 	install -Dm755 ${srcdir}/nsm ${pkgdir}/usr/bin/nsm
 	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/chpst ${pkgdir}/usr/bin/chpst
 	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/utmpset ${pkgdir}/usr/bin/utmpset
+	install -Dm755 ${srcdir}/runit-artix/script/zzz ${pkgdir}/usr/bin/zzz
 
 	# man pages
 	install -dm755 "${pkgdir}/usr/share/man/man1"
@@ -113,6 +114,7 @@ package() {
 	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitro.8 "${pkgdir}/usr/share/man/man8/nitro.8"
 	install -Dm644 ${srcdir}/admin/runit-${_rver}/man/chpst.8 "${pkgdir}/usr/share/man/man8/chpst.8"
 	install -Dm644 ${srcdir}/admin/runit-${_rver}/man/utmpset.8 "${pkgdir}/usr/share/man/man8/utmpset.8"
+	install -Dm644 ${srcdir}/runit-artix/man/zzz.8 "${pkgdir}/usr/share/man/man8/zzz.8"
 
 	cd $srcdir/runit-rc
 	make DESTDIR="${pkgdir}" install-rc
