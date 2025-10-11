@@ -52,7 +52,7 @@ index f484baa..391d0b1 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 5d80991..e46879c 100644
+index 1b5982b..4b262bf 100644
 --- a/nitro.c
 +++ b/nitro.c
 @@ -143,7 +143,8 @@ DIR *cwd;
@@ -160,7 +160,7 @@ index 5d80991..e46879c 100644
  	struct dirent *ent;
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
-@@ -1537,16 +1549,9 @@ handle_control_sock()
+@@ -1541,16 +1553,9 @@ handle_control_sock()
  	case 'd':
  	case 'r':
  	{
@@ -177,7 +177,7 @@ index 5d80991..e46879c 100644
  		if (i < 0)
  			goto fail;
  		services[i].seen = 1;
-@@ -1854,10 +1859,13 @@ main(int argc, char *argv[])
+@@ -1858,10 +1863,13 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
@@ -196,10 +196,10 @@ index 5d80991..e46879c 100644
  	cwd = opendir(servicedir);
  	if (!cwd)
 diff --git a/nitroctl.c b/nitroctl.c
-index ab6fb33..006f3a0 100644
+index 2bfea96..eba86b9 100644
 --- a/nitroctl.c
 +++ b/nitroctl.c
-@@ -326,7 +326,7 @@ main(int argc, char *argv[])
+@@ -384,7 +384,7 @@ main(int argc, char *argv[])
  			execvp("nitro", argv);
  			dprintf(2, "nitroctl: exec init failed: %s\n", strerror(errno));
  
