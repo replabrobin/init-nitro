@@ -4,7 +4,7 @@ _nrev="db54b83e790288ec6aa28fbbeda21e6f52c553f4"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=5
+pkgrel=6
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -38,7 +38,7 @@ sha256sums=('b16f1e65c8e004efa5d4f4406e9e0a4022c86326090b1fba59ccf3beca5a25e2'
             '191f7d0ad00183ab3a8820ca9bf4295de8af6d9bfa06571653e8fd3d8280e63a'
             '3be45d4a6e42ca33bec1ed86dcbfabd70219ab670f3a1dab8bde6cd3ddfdb1d2'
             'fd2659e5f12fd9e108da74fcf128c137892805e085a6d432d088751055ca5f0a'
-            '42e5c1fbbc9aa7075a48d29e03d3f4f143d9ab7a517a540c575e6994473c645d'
+            'b95c84100bb989a6586da256a40d9e0b8f164c1b535ca0d4e5d3cce537f4c542'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
             'eb31194f5f181e58225fb73833a110fafabeb28d7b149cac2cf80242851a284f'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
@@ -52,7 +52,7 @@ prepare() {
 	cd $pkgname-$pkgver
 	patch -Np1 -i "$srcdir"/000-services.patch
 	cd "$srcdir/runit-rc"
-	#patch -Np1 -i "$srcdir"/001-runit-rc.patch
+	patch -Np1 -i "$srcdir"/001-runit-rc.patch
 
 	cd "$srcdir/admin/runit-${_rver}/src"
 	for x in "${srcdir}"/patches/*; do
@@ -71,7 +71,7 @@ build() {
 	make
 	CFLAGS="${icflags}"
 	cd "${srcdir}/runit-rc"
-	make
+	make RCRUNDIR=/run/nitro/sv.d
 	#from runit pkg
 	#cc ${CFLAGS} ${srcdir}/halt.c -o ${srcdir}/halt ${LDFLAGS}
 
