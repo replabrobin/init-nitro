@@ -4,7 +4,7 @@ _nrev="db54b83e790288ec6aa28fbbeda21e6f52c553f4"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=6
+pkgrel=7
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -31,6 +31,9 @@ source=(
 		"00-init-nitro-remove.hook"
 		"99-init-nitro-install.hook"
 		"init-nitro-script"
+		"nitro-install.hook"
+		"nitro-remove.hook"
+		"nitro-hook"
 		)
 sha256sums=('b16f1e65c8e004efa5d4f4406e9e0a4022c86326090b1fba59ccf3beca5a25e2'
             'SKIP'
@@ -44,7 +47,10 @@ sha256sums=('b16f1e65c8e004efa5d4f4406e9e0a4022c86326090b1fba59ccf3beca5a25e2'
             'eb31194f5f181e58225fb73833a110fafabeb28d7b149cac2cf80242851a284f'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
             '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'
-            '979b592f12348e49f7543ad539780af5b6fa7b8d3c3669ca6d683894128be26f')
+            '979b592f12348e49f7543ad539780af5b6fa7b8d3c3669ca6d683894128be26f'
+            'c495dc6223f3bcdc1f9dfb24e64dbf901048eca80fd2219990e086d0e806bba5'
+            'e1b28215d691b57b9b75324fb5f4ef62f2b0362412824322dfb9fdcd879aff84'
+            'd2e9255b5181d4668c899a90d8cb05730bcb0d98ca05cc1bea785f94df9c6759')
 validpgpkeys=()
 
 prepare() {
@@ -102,6 +108,9 @@ package() {
 	install -Dm755 ${srcdir}/init-nitro-script "${pkgdir}/usr/share/libalpm/scripts/init-nitro-script"
 	install -Dm644 ${srcdir}/00-init-nitro-remove.hook "${pkgdir}/usr/share/libalpm/hooks/00-init-nitro-remove.hook"
 	install -Dm644 ${srcdir}/99-init-nitro-install.hook "${pkgdir}/usr/share/libalpm/hooks/99-init-nitro-install.hook"
+	install -Dm755 ${srcdir}/nitro-hook "${pkgdir}/usr/share/libalpm/scripts/nitro-hook"
+	install -Dm644 ${srcdir}/nitro-install.hook "${pkgdir}/usr/share/libalpm/hooks/nitro-install.hook"
+	install -Dm644 ${srcdir}/nitro-remove.hook "${pkgdir}/usr/share/libalpm/hooks/nitro-remove.hook"
 	for x in halt poweroff reboot; do ln -s nitroctl ${pkgdir}/usr/bin/$x;done
 	install -Dm755 ${srcdir}/nsm ${pkgdir}/usr/bin/nsm
 	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/chpst ${pkgdir}/usr/bin/chpst

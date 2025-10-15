@@ -1,0 +1,10 @@
+[Trigger]
+Type = Path
+Operation = Remove
+Target = etc/nitro/sv/*
+
+[Action]
+Description = Displaying nitro service help ...
+When = PostTransaction
+Exec = /usr/share/libalpm/scripts/nitro-hook del
+NeedsTargets
