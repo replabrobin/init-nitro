@@ -65,5 +65,5 @@ dkms.conf
 /runit-*.tar.gz
 /runit-artix-*.tar.gz
 /runit-patches-*.tar.xz
-/runit-rc/
+/init-nitro-rc/
 /init-nitro-*.tar.zst

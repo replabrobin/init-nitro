@@ -52,7 +52,7 @@ index f484baa..391d0b1 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 1b5982b..4b262bf 100644
+index 599071f..4b262bf 100644
 --- a/nitro.c
 +++ b/nitro.c
 @@ -143,7 +143,8 @@ DIR *cwd;
@@ -170,7 +170,7 @@ index 1b5982b..4b262bf 100644
  			goto fail;
  		int i = find_service(buf + 1);
 -		if (i < 0 &&
--		    buf[0] != 'd' &&
+-		    (buf[0] != 'd' || find_service("SYS") != -1) &&
 -		    valid_service_name(buf + 1) &&
 -		    stat_slash_to_at(buf + 1, ".", &st) == 0)
 -			i = add_service(buf + 1);
@@ -196,7 +196,7 @@ index 1b5982b..4b262bf 100644
  	cwd = opendir(servicedir);
  	if (!cwd)
 diff --git a/nitroctl.c b/nitroctl.c
-index 2bfea96..eba86b9 100644
+index b2284d2..fdcef0e 100644
 --- a/nitroctl.c
 +++ b/nitroctl.c
 @@ -384,7 +384,7 @@ main(int argc, char *argv[])
