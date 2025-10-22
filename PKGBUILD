@@ -4,7 +4,7 @@ _nrev="8c376d4a5baa7f32999620f9fe3eb51ca8e0dcbc"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=1
+pkgrel=2
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -37,7 +37,7 @@ sha256sums=('6af4e18010dec7bc074b10025e2e032753b25b3aa1fbcf056ec03fc95a8b4c42'
             'SKIP'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
-            '3be45d4a6e42ca33bec1ed86dcbfabd70219ab670f3a1dab8bde6cd3ddfdb1d2'
+            'f4367c9b92e715435dd708065aeba1b86f582e1b06decf737e4be25bd69cb0a7'
             '4160f96459cdb454ba5efc21a2949d422cd0ce6df2308c733f50307ecb6e667c'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
             'eb31194f5f181e58225fb73833a110fafabeb28d7b149cac2cf80242851a284f'
