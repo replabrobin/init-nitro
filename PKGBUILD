@@ -4,7 +4,7 @@ _nrev="8c376d4a5baa7f32999620f9fe3eb51ca8e0dcbc"
 _rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=2
+pkgrel=3
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -20,9 +20,9 @@ backup=()
 source=(
 		"nitro-$pkgver-${_nrev:0:10}.tar.gz::https://github.com/leahneukirchen/nitro/archive/${_nrev}.tar.gz"
 		"git+https://github.com/replabrobin/init-nitro-rc.git"
+		"git+https://github.com/replabrobin/init-nitro-base-svcs.git"
 		"http://smarden.org/runit/runit-${_rver}.tar.gz"
 		"runit-patches-${_rpver}.tar.xz::https://github.com/clan/runit/releases/download/runit-${_rver}-r2/runit-${_rver}-patches-${_rpver}.tar.xz"
-		"etc-nitro.tar.xz"
 		"000-services.patch"
 		"shutdown"
 		"nsm"
@@ -35,9 +35,9 @@ source=(
 		)
 sha256sums=('6af4e18010dec7bc074b10025e2e032753b25b3aa1fbcf056ec03fc95a8b4c42'
             'SKIP'
+            'SKIP'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
-            'f4367c9b92e715435dd708065aeba1b86f582e1b06decf737e4be25bd69cb0a7'
             '4160f96459cdb454ba5efc21a2949d422cd0ce6df2308c733f50307ecb6e667c'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
             'eb31194f5f181e58225fb73833a110fafabeb28d7b149cac2cf80242851a284f'
@@ -63,6 +63,8 @@ prepare() {
 			patch -Np2 -i "$x" | (grep -e "chpst" -e"utmpset" || true)
 		fi
 	done
+	cp -pr "$srcdir/init-nitro-base-svcs/" "$srcdir/base-svcs/"
+	rm -rf "$srcdir/base-svcs/"{LICENSE,.git}
 }
 
 build() {
@@ -128,5 +130,5 @@ package() {
 	echo "net.ipv4.ping_group_range = 0 2147483647" > "$pkgdir/usr/lib/sysctl.d/55-iputils.conf"
 
 	install -dm755  "${pkgdir}/etc"
-	cp -pr $srcdir/etc-nitro $pkgdir/etc/nitro
+	cp -pr "$srcdir/base-svcs" "$pkgdir/etc/nitro"
 }
