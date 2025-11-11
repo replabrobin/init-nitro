@@ -69,3 +69,4 @@ dkms.conf
 /init-nitro-base-svcs-*.tar.gz
 /init-nitro-*.tar.zst
 /init-nitro-*.tar.zst.sig
+/.SRCINFO
