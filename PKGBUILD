@@ -1,10 +1,12 @@
 pkgname=init-nitro
-pkgver=0.5.0
+pkgver=0.5.4
+#reviisions nitro, init-nitro-rc init-intro-base-svcs
 _nrev="8c376d4a5baa7f32999620f9fe3eb51ca8e0dcbc"
-_rcrev="e0c4e306e448d2ac7a8a314133995ee37bc48f92a"
+_rcrev="1aa6746e1aaf014f2ea52b5af2a83a96a6fd34be"
+_bsrev="a174cafdeef8c1cd65309c596451c5bc0c046fd9"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=3
+pkgrel=1
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -19,8 +21,8 @@ groups=()
 backup=()
 source=(
 		"nitro-$pkgver-${_nrev:0:10}.tar.gz::https://github.com/leahneukirchen/nitro/archive/${_nrev}.tar.gz"
-		"git+https://github.com/replabrobin/init-nitro-rc.git"
-		"git+https://github.com/replabrobin/init-nitro-base-svcs.git"
+		"init-nitro-rc-${_rcrev:0:10}.tar.gz::https://github.com/replabrobin/init-nitro-rc/archive/${_rcrev}.tar.gz"
+		"init-nitro-base-svcs-${_bsrev:0:10}.tar.gz::https://github.com/replabrobin/init-nitro-base-svcs/archive/${_bsrev}.tar.gz"
 		"http://smarden.org/runit/runit-${_rver}.tar.gz"
 		"runit-patches-${_rpver}.tar.xz::https://github.com/clan/runit/releases/download/runit-${_rver}-r2/runit-${_rver}-patches-${_rpver}.tar.xz"
 		"000-services.patch"
@@ -34,8 +36,8 @@ source=(
 		"nitro-hook"
 		)
 sha256sums=('6af4e18010dec7bc074b10025e2e032753b25b3aa1fbcf056ec03fc95a8b4c42'
-            'SKIP'
-            'SKIP'
+            '30bd7e9937d980bb445ae581d0f21a8f5c78314b375a73ef0b34cf35fdafdc09'
+            '109c6c7e6d988225bb27c93039a3fe8c431a02ac29bf089ca1e7fed988de92b8'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '4160f96459cdb454ba5efc21a2949d422cd0ce6df2308c733f50307ecb6e667c'
@@ -52,6 +54,7 @@ validpgpkeys=()
 prepare() {
 	local x
 	ln -sf nitro-${_nrev} $pkgname-$pkgver
+	ln -sf init-nitro-rc{-${_rcrev},}
 	cd $pkgname-$pkgver
 	patch -Np1 -i "$srcdir"/000-services.patch
 
@@ -63,7 +66,7 @@ prepare() {
 			patch -Np2 -i "$x" | (grep -e "chpst" -e"utmpset" || true)
 		fi
 	done
-	cp -pr "$srcdir/init-nitro-base-svcs/" "$srcdir/base-svcs/"
+	cp -pr "$srcdir/init-nitro-base-svcs-${_bsrev}/" "$srcdir/base-svcs/"
 	rm -rf "$srcdir/base-svcs/"{LICENSE,.git}
 }
 
@@ -124,6 +127,8 @@ package() {
 	make DESTDIR="${pkgdir}" install-rc
 	install -Dm644 ${srcdir}/init-nitro-rc/script/zzz.8 "${pkgdir}/usr/share/man/man8/zzz.8"
 	install -Dm755 ${srcdir}/init-nitro-rc/script/zzz ${pkgdir}/usr/bin/zzz
+	install -Dm644 ${srcdir}/init-nitro-rc/src/pause.1 "${pkgdir}/usr/share/man/man1/pause.1"
+	install -Dm755 ${srcdir}/init-nitro-rc/src/pause ${pkgdir}/usr/bin/pause
 
 	# iputils-specific configuration
 	mkdir -p "$pkgdir/usr/lib/sysctl.d"
