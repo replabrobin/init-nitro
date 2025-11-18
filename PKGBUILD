@@ -1,7 +1,7 @@
 pkgname=init-nitro
-pkgver=0.5.4
+pkgver=0.5.5
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
-_nrev="8c376d4a5baa7f32999620f9fe3eb51ca8e0dcbc"
+_nrev="b987314dde5fa2c79614db8fa5fa55310c1a1a2b"
 _rcrev="1aa6746e1aaf014f2ea52b5af2a83a96a6fd34be"
 _bsrev="a174cafdeef8c1cd65309c596451c5bc0c046fd9"
 _rver=2.2.0
@@ -12,7 +12,7 @@ arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
 license=('GPL')
 provides=('nitro')
-depends=('glibc' 'bash')
+depends=('glibc' 'bash' 'nitro-nsm')
 conflicts=('svc-manager' 'eudev-nitro')
 replaces=('eudev-nitro')
 makedepends=()
@@ -27,7 +27,6 @@ source=(
 		"runit-patches-${_rpver}.tar.xz::https://github.com/clan/runit/releases/download/runit-${_rver}-r2/runit-${_rver}-patches-${_rpver}.tar.xz"
 		"000-services.patch"
 		"shutdown"
-		"nsm"
 		"00-init-nitro-remove.hook"
 		"99-init-nitro-install.hook"
 		"init-nitro-script"
@@ -35,14 +34,13 @@ source=(
 		"nitro-remove.hook"
 		"nitro-hook"
 		)
-sha256sums=('6af4e18010dec7bc074b10025e2e032753b25b3aa1fbcf056ec03fc95a8b4c42'
+sha256sums=('6490bc882ba2068999d2c2814751c1bb60e0a8efa76aaa282d506f3334a70819'
             '30bd7e9937d980bb445ae581d0f21a8f5c78314b375a73ef0b34cf35fdafdc09'
             '109c6c7e6d988225bb27c93039a3fe8c431a02ac29bf089ca1e7fed988de92b8'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
-            '4160f96459cdb454ba5efc21a2949d422cd0ce6df2308c733f50307ecb6e667c'
+            '95104e7c7b0a5b95b60a089ef99d05e6d6977a6b96dd26b41f5aa7ad465efcce'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
-            'eb31194f5f181e58225fb73833a110fafabeb28d7b149cac2cf80242851a284f'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
             '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'
             '979b592f12348e49f7543ad539780af5b6fa7b8d3c3669ca6d683894128be26f'
@@ -111,7 +109,6 @@ package() {
 	install -Dm644 ${srcdir}/nitro-install.hook "${pkgdir}/usr/share/libalpm/hooks/nitro-install.hook"
 	install -Dm644 ${srcdir}/nitro-remove.hook "${pkgdir}/usr/share/libalpm/hooks/nitro-remove.hook"
 	for x in halt poweroff reboot; do ln -s nitroctl ${pkgdir}/usr/bin/$x;done
-	install -Dm755 ${srcdir}/nsm ${pkgdir}/usr/bin/nsm
 	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/chpst ${pkgdir}/usr/bin/chpst
 	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/utmpset ${pkgdir}/usr/bin/utmpset
 
