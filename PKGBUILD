@@ -6,7 +6,7 @@ _rcrev="1aa6746e1aaf014f2ea52b5af2a83a96a6fd34be"
 _bsrev="a174cafdeef8c1cd65309c596451c5bc0c046fd9"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=1
+pkgrel=2
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -64,7 +64,9 @@ prepare() {
 			patch -Np2 -i "$x" | (grep -e "chpst" -e"utmpset" || true)
 		fi
 	done
-	cp -pr "$srcdir/init-nitro-base-svcs-${_bsrev}/" "$srcdir/base-svcs/"
+	#make a copy so we can mess with base-svcs
+	rm -rf "$srcdir/base-svcs"
+	cp -pr "$srcdir/init-nitro-base-svcs-${_bsrev}/" "$srcdir/base-svcs"
 	rm -rf "$srcdir/base-svcs/"{LICENSE,.git}
 }
 
