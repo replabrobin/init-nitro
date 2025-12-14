@@ -1,12 +1,12 @@
 pkgname=init-nitro
-pkgver=0.5.5
+pkgver=0.6.0
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
-_nrev="b987314dde5fa2c79614db8fa5fa55310c1a1a2b"
+_nrev="9778717ab212b44d88e48b95951f3c62147739a8"
 _rcrev="1aa6746e1aaf014f2ea52b5af2a83a96a6fd34be"
 _bsrev="a174cafdeef8c1cd65309c596451c5bc0c046fd9"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=2
+pkgrel=1
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -34,12 +34,12 @@ source=(
 		"nitro-remove.hook"
 		"nitro-hook"
 		)
-sha256sums=('6490bc882ba2068999d2c2814751c1bb60e0a8efa76aaa282d506f3334a70819'
+sha256sums=('cf6faf3327f4abc3aa5fd241445c6ed02d776064a6cd65e9f7d6ea92d1a69632'
             '30bd7e9937d980bb445ae581d0f21a8f5c78314b375a73ef0b34cf35fdafdc09'
             '109c6c7e6d988225bb27c93039a3fe8c431a02ac29bf089ca1e7fed988de92b8'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
-            '95104e7c7b0a5b95b60a089ef99d05e6d6977a6b96dd26b41f5aa7ad465efcce'
+            '8d778b9927899b9d3ea3abc4275a1c60c7b1a833ef17d6c25128022f46c95187'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
             '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'

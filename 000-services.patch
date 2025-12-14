@@ -52,10 +52,10 @@ index f484baa..391d0b1 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 9c6c582..457d4c4 100644
+index 7975c3d..10c477c 100644
 --- a/nitro.c
 +++ b/nitro.c
-@@ -143,7 +143,8 @@ DIR *cwd;
+@@ -138,7 +138,8 @@ DIR *cwd;
  DIR *notifydir;
  char notifypath[256];
  const char *control_socket_path;
@@ -65,7 +65,7 @@ index 9c6c582..457d4c4 100644
  
  long total_reaps;
  long total_sv_reaps;
-@@ -302,6 +303,13 @@ panic()
+@@ -297,6 +298,13 @@ panic()
  #else
  #define dprn(...) {}
  #endif
@@ -79,7 +79,7 @@ index 9c6c582..457d4c4 100644
  
  int
  stat_slash(const char *dir, const char *name, struct stat *st)
-@@ -1153,36 +1161,40 @@ refresh_log:
+@@ -1148,36 +1156,40 @@ refresh_log:
  	return i;
  }
  
@@ -149,7 +149,7 @@ index 9c6c582..457d4c4 100644
  }
  
  void
-@@ -1193,8 +1205,8 @@ rescan()
+@@ -1188,8 +1200,8 @@ rescan()
  	for (i = 0; i < max_service; i++)
  		services[i].seen = 0;
  
@@ -160,7 +160,7 @@ index 9c6c582..457d4c4 100644
  	struct dirent *ent;
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
-@@ -1540,18 +1552,9 @@ handle_control_sock()
+@@ -1535,18 +1547,9 @@ handle_control_sock()
  	case 'd':
  	case 'r':
  	{
@@ -180,7 +180,7 @@ index 9c6c582..457d4c4 100644
  		if (i < 0)
  			goto fail;
  		services[i].seen = 1;
-@@ -1859,10 +1862,13 @@ main(int argc, char *argv[])
+@@ -1854,10 +1857,13 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
@@ -199,10 +199,10 @@ index 9c6c582..457d4c4 100644
  	cwd = opendir(servicedir);
  	if (!cwd)
 diff --git a/nitroctl.c b/nitroctl.c
-index b2284d2..fdcef0e 100644
+index e3cff83..528d9b8 100644
 --- a/nitroctl.c
 +++ b/nitroctl.c
-@@ -384,7 +384,7 @@ main(int argc, char *argv[])
+@@ -404,7 +404,7 @@ main(int argc, char *argv[])
  			execvp("nitro", argv);
  			dprintf(2, "nitroctl: exec init failed: %s\n", strerror(errno));
  
