@@ -6,7 +6,7 @@ _rcrev="1aa6746e1aaf014f2ea52b5af2a83a96a6fd34be"
 _bsrev="a174cafdeef8c1cd65309c596451c5bc0c046fd9"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=2
+pkgrel=3
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -51,9 +51,9 @@ validpgpkeys=()
 
 prepare() {
 	local x
-	ln -sf nitro-${_nrev} $pkgname-$pkgver
+	ln -sf nitro-${_nrev} nitro
 	ln -sf init-nitro-rc{-${_rcrev},}
-	cd $pkgname-$pkgver
+	cd nitro
 	patch -Np1 -i "$srcdir"/000-services.patch
 
 	cd "$srcdir/admin/runit-${_rver}/src"
@@ -72,7 +72,7 @@ prepare() {
 
 build() {
 	local icflags="${CFLAGS}"
-	cd $pkgname-$pkgver
+	cd nitro
 	[ -n "$DEBUG" ] && CFLAGS="${icflags} -DDEBUG=${DEBUG}"
 	make
 	CFLAGS="${icflags}"
@@ -80,9 +80,6 @@ build() {
 	make RCRUNDIR=/run/nitro/sv.d
 	#from runit pkg
 	#cc ${CFLAGS} ${srcdir}/halt.c -o ${srcdir}/halt ${LDFLAGS}
-
-	#cd ${_pkgname}
-	#make SERVICEDIR="${_servicedir}"
 
 	cd "${srcdir}/admin/runit-${_rver}"
 
@@ -98,7 +95,7 @@ build() {
 
 package() {
 	local x
-	cd $pkgname-$pkgver
+	cd nitro
 	#binaries
 	install -dm755 "${pkgdir}/usr/bin"
 	install -Dm755 nitro ${pkgdir}/usr/bin/nitro
@@ -117,8 +114,8 @@ package() {
 	# man pages
 	install -dm755 "${pkgdir}/usr/share/man/man1"
 	install -dm755 "${pkgdir}/usr/share/man/man8"
-	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitroctl.1 "${pkgdir}/usr/share/man/man1/nitroctl.1"
-	install -Dm644 ${srcdir}/${pkgname}-${pkgver}/nitro.8 "${pkgdir}/usr/share/man/man8/nitro.8"
+	install -Dm644 ${srcdir}/nitro/nitroctl.1 "${pkgdir}/usr/share/man/man1/nitroctl.1"
+	install -Dm644 ${srcdir}/nitro/nitro.8 "${pkgdir}/usr/share/man/man8/nitro.8"
 	install -Dm644 ${srcdir}/admin/runit-${_rver}/man/chpst.8 "${pkgdir}/usr/share/man/man8/chpst.8"
 	install -Dm644 ${srcdir}/admin/runit-${_rver}/man/utmpset.8 "${pkgdir}/usr/share/man/man8/utmpset.8"
 
