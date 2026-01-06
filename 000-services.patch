@@ -1,5 +1,5 @@
 diff --git a/README.md b/README.md
-index 57dc94e..ff90213 100644
+index 57dc94e..f4baeb8 100644
 --- a/README.md
 +++ b/README.md
 @@ -13,7 +13,7 @@ These are the main applications nitro is designed for:
@@ -7,7 +7,7 @@ index 57dc94e..ff90213 100644
  
  nitro is configured by a directory of scripts, defaulting to
 -`/etc/nitro` (or the first command line argument).
-+`/etc/nitro/services (or the first command line argument).
++`/etc/nitro/services` (or the first command line argument).
  
  ## Requirements
  
@@ -52,10 +52,10 @@ index f484baa..391d0b1 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 7bad3c9..4e290b0 100644
+index 1e08b5f..b62e363 100644
 --- a/nitro.c
 +++ b/nitro.c
-@@ -138,7 +138,8 @@ DIR *cwd;
+@@ -139,7 +139,8 @@ DIR *cwd;
  DIR *notifydir;
  char notifypath[256];
  const char *control_socket_path;
@@ -65,7 +65,7 @@ index 7bad3c9..4e290b0 100644
  
  long total_reaps;
  long total_sv_reaps;
-@@ -297,6 +298,13 @@ panic()
+@@ -292,6 +293,13 @@ panic()
  #else
  #define dprn(...) {}
  #endif
@@ -79,7 +79,7 @@ index 7bad3c9..4e290b0 100644
  
  int
  stat_slash(const char *dir, const char *name, struct stat *st)
-@@ -1159,36 +1167,40 @@ refresh_log:
+@@ -1136,36 +1144,40 @@ refresh_log:
  	return i;
  }
  
@@ -149,7 +149,7 @@ index 7bad3c9..4e290b0 100644
  }
  
  void
-@@ -1199,8 +1211,8 @@ rescan()
+@@ -1176,8 +1188,8 @@ rescan()
  	for (i = 0; i < max_service; i++)
  		services[i].seen = 0;
  
@@ -160,27 +160,27 @@ index 7bad3c9..4e290b0 100644
  	struct dirent *ent;
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
-@@ -1546,18 +1558,9 @@ handle_control_sock()
- 	case 'd':
- 	case 'r':
+@@ -1565,18 +1577,10 @@ handle_control_sock()
+ 	case T_CMD_DOWN:
+ 	case T_CMD_RESTART:
  	{
 -		struct stat st;
 -
- 		if (!buf[1])
+ 		if (len == 0)
  			goto fail;
--
+ 
 -		int i;
--		if ((buf[0] != 'd' || find_service("SYS") != -1) &&
--		    valid_service_name(buf + 1) &&
--		    stat_slash_to_at(buf + 1, ".", &st) == 0)
--			i = add_service(buf + 1);
+-		if ((cmd != T_CMD_DOWN || find_service("SYS") != -1) &&
+-		    valid_service_name(sv) &&
+-		    stat_slash_to_at(sv, ".", &st) == 0)
+-			i = add_service(sv);
 -		else
--			i = find_service(buf + 1);
-+		int i = find_service(buf + 1);
+-			i = find_service(sv);
++		int i = find_service(sv);
  		if (i < 0)
  			goto fail;
  		services[i].seen = 1;
-@@ -1865,10 +1868,13 @@ main(int argc, char *argv[])
+@@ -1882,10 +1886,13 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
@@ -199,10 +199,10 @@ index 7bad3c9..4e290b0 100644
  	cwd = opendir(servicedir);
  	if (!cwd)
 diff --git a/nitroctl.c b/nitroctl.c
-index e3cff83..528d9b8 100644
+index e67a6cc..8dcf497 100644
 --- a/nitroctl.c
 +++ b/nitroctl.c
-@@ -404,7 +404,7 @@ main(int argc, char *argv[])
+@@ -545,7 +545,7 @@ main(int argc, char *argv[])
  			execvp("nitro", argv);
  			dprintf(2, "nitroctl: exec init failed: %s\n", strerror(errno));
  
