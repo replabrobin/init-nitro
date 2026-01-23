@@ -1,7 +1,7 @@
 pkgname=init-nitro
-pkgver=0.6.1
+pkgver=0.7.0
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
-_nrev="ca46b245f61476c19bbce9ce2c1eff42836fa0a8"
+_nrev="9c46447e63a846de13e104226d4df60e546eb216"
 _rcrev="1aa6746e1aaf014f2ea52b5af2a83a96a6fd34be"
 _bsrev="a174cafdeef8c1cd65309c596451c5bc0c046fd9"
 _rver=2.2.0
@@ -19,6 +19,7 @@ makedepends=()
 optdepends=()
 groups=()
 backup=()
+options=('!debug')
 source=(
 		"nitro-$pkgver-${_nrev:0:10}.tar.gz::https://github.com/leahneukirchen/nitro/archive/${_nrev}.tar.gz"
 		"init-nitro-rc-${_rcrev:0:10}.tar.gz::https://github.com/replabrobin/init-nitro-rc/archive/${_rcrev}.tar.gz"
@@ -33,24 +34,34 @@ source=(
 		"nitro-install.hook"
 		"nitro-remove.hook"
 		"nitro-hook"
+		"version.txt.in"
 		)
-sha256sums=('15dfeafba79d865f4bc0dc2afd9c43f32557cabe1fbb590f437fe7961a2157ad'
+sha256sums=('21f2423090d1148d42219368b3f45079dd04c6d1c05c5511c57e0e5b1f89e500'
             '30bd7e9937d980bb445ae581d0f21a8f5c78314b375a73ef0b34cf35fdafdc09'
             '109c6c7e6d988225bb27c93039a3fe8c431a02ac29bf089ca1e7fed988de92b8'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
-            '7d28124a1559cd9901d77628b45d0420d59c758c8fef7c01ea484b76e343574b'
+            '6b06e3c4634bda44c65c5c857bb1ff1e30779c7cc4fc13196914fdbdf54785b3'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
             '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'
             '979b592f12348e49f7543ad539780af5b6fa7b8d3c3669ca6d683894128be26f'
             'c495dc6223f3bcdc1f9dfb24e64dbf901048eca80fd2219990e086d0e806bba5'
             'e1b28215d691b57b9b75324fb5f4ef62f2b0362412824322dfb9fdcd879aff84'
-            'd2e9255b5181d4668c899a90d8cb05730bcb0d98ca05cc1bea785f94df9c6759')
+            'd2e9255b5181d4668c899a90d8cb05730bcb0d98ca05cc1bea785f94df9c6759'
+            '2940cec3306bc3907bcc48ccbdc4cf750a7324037f06b8e4d7d0d928ca5b606e')
 validpgpkeys=()
+
 
 prepare() {
 	local x
+	arch='$arch' \
+	_inrev="$(git rev-parse HEAD)" \
+	_nrev="$_nrev" \
+	_bsrev="$_bsrev" \
+	_rcrev="$_rcrev" \
+	version="${pkgver}-${_nrev:0:10}" \
+		envsubst < version.txt.in > version.txt
 	ln -sf nitro-${_nrev} nitro
 	ln -sf init-nitro-rc{-${_rcrev},}
 	cd nitro
@@ -132,4 +143,5 @@ package() {
 
 	install -dm755  "${pkgdir}/etc"
 	cp -pr "$srcdir/base-svcs" "$pkgdir/etc/nitro"
+	install -Dm644 ${srcdir}/version.txt "${pkgdir}/etc/nitro/version.txt"
 }

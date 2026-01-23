@@ -1,0 +1,15 @@
+This is release $version of the init-nitro pkg
+
+1)	The init-nitro pkg is a patched version of
+	https://github.com/leahneukirchen/nitro/commit/$_nrev
+
+2)	and these codes
+	https://github.com/replabrobin/init-nitro/commit/$_inrev
+	https://github.com/replabrobin/init-nitro-base-svcs/commit/$_bsrev
+	https://github.com/replabrobin/init-nitro-rc/commit/$_rcrev
+
+3)	The init-nitro-svcs are based on the equivalent runit ones
+	https://github.com/replabrobin/init-nitro-svcs/
+
+4)	All the packages are here in a repo signed by 464C7BDA0BE4C97C
+	https://artix-lxqt-nitro.sourceforge.io/nitro-world/$arch

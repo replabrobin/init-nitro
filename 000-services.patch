@@ -1,5 +1,5 @@
 diff --git a/README.md b/README.md
-index 57dc94e..f4baeb8 100644
+index 395425f..0431f38 100644
 --- a/README.md
 +++ b/README.md
 @@ -13,7 +13,7 @@ These are the main applications nitro is designed for:
@@ -29,7 +29,7 @@ index 57dc94e..f4baeb8 100644
  - Shutdown: shutdown (poweroff) the system
  - Reboot: reboot the system
  
-@@ -245,7 +245,7 @@ the appropriate target.
+@@ -263,7 +263,7 @@ the appropriate target.
  You can add this line to `/etc/ttys` to run `nitro` supervised by
  FreeBSD `init`:
  
@@ -199,10 +199,10 @@ index 1e08b5f..b62e363 100644
  	cwd = opendir(servicedir);
  	if (!cwd)
 diff --git a/nitroctl.c b/nitroctl.c
-index e67a6cc..8dcf497 100644
+index a3771e7..2687c86 100644
 --- a/nitroctl.c
 +++ b/nitroctl.c
-@@ -545,7 +545,7 @@ main(int argc, char *argv[])
+@@ -569,7 +569,7 @@ main(int argc, char *argv[])
  			execvp("nitro", argv);
  			dprintf(2, "nitroctl: exec init failed: %s\n", strerror(errno));
  
