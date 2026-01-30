@@ -1,5 +1,5 @@
 pkgname=init-nitro
-pkgver=0.7.1.1
+pkgver=0.7.1.2
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
 _nrev="86e8bfab86c32d78341f9cd9d956bbca2b391a59"
 _rcrev="1aa6746e1aaf014f2ea52b5af2a83a96a6fd34be"
@@ -27,6 +27,7 @@ source=(
 		"http://smarden.org/runit/runit-${_rver}.tar.gz"
 		"runit-patches-${_rpver}.tar.xz::https://github.com/clan/runit/releases/download/runit-${_rver}-r2/runit-${_rver}-patches-${_rpver}.tar.xz"
 		"000-services.patch"
+		"001-init-nitro-rc.patch"
 		"shutdown"
 		"00-init-nitro-remove.hook"
 		"99-init-nitro-install.hook"
@@ -42,6 +43,7 @@ sha256sums=('d729647fbc043454226e896ca5dbc78c8f342ebae8d9493bf0059ee9fe64a5e4'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '871e98fc8c12ce76d8a8a533bb214fbc9ce1b9f1ba6c8c4b5fc0575d46c6b3ed'
+            '84cad629ce251d0b0c92f505b03f0764847b05c1727a0d1c2bc783497d56eed6'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
             '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'
@@ -64,8 +66,10 @@ prepare() {
 		envsubst < version.txt.in > version.txt
 	ln -sf nitro-${_nrev} nitro
 	ln -sf init-nitro-rc{-${_rcrev},}
-	cd nitro
+	cd "$srcdir/nitro"
 	patch -Np1 -i "$srcdir"/000-services.patch
+	cd "$srcdir/init-nitro-rc"
+	patch -Np1 -i "$srcdir"/001-init-nitro-rc.patch
 
 	cd "$srcdir/admin/runit-${_rver}/src"
 	for x in "${srcdir}"/patches/*; do
