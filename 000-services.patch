@@ -52,10 +52,18 @@ index f484baa..391d0b1 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 0b0ad7b..fbdb69c 100644
+index 0b0ad7b..7a77778 100644
 --- a/nitro.c
 +++ b/nitro.c
-@@ -139,7 +139,8 @@ DIR *cwd;
+@@ -14,6 +14,7 @@
+ #ifdef __linux__
+ #include <sys/mount.h>
+ #include <sys/reboot.h>
++#include <sys/statvfs.h>
+ #endif
+ #ifdef __NetBSD__
+ #include <sys/mount.h>
+@@ -139,7 +140,8 @@ DIR *cwd;
  DIR *notifydir;
  char notifypath[256];
  const char *control_socket_path;
@@ -65,7 +73,7 @@ index 0b0ad7b..fbdb69c 100644
  
  long total_reaps;
  long total_sv_reaps;
-@@ -292,6 +293,13 @@ panic()
+@@ -292,6 +294,13 @@ panic()
  #else
  #define dprn(...) {}
  #endif
@@ -79,7 +87,7 @@ index 0b0ad7b..fbdb69c 100644
  
  int
  stat_slash(const char *dir, const char *name, struct stat *st)
-@@ -1138,36 +1146,40 @@ refresh_log:
+@@ -1138,36 +1147,40 @@ refresh_log:
  	return i;
  }
  
@@ -149,7 +157,7 @@ index 0b0ad7b..fbdb69c 100644
  }
  
  void
-@@ -1178,8 +1190,8 @@ rescan()
+@@ -1178,8 +1191,8 @@ rescan()
  	for (i = 0; i < max_service; i++)
  		services[i].seen = 0;
  
@@ -160,7 +168,7 @@ index 0b0ad7b..fbdb69c 100644
  	struct dirent *ent;
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
-@@ -1568,19 +1580,13 @@ handle_control_sock()
+@@ -1568,19 +1581,13 @@ handle_control_sock()
  	case T_CMD_RESTART:
  	case T_CMD_READY:
  	{
@@ -184,7 +192,7 @@ index 0b0ad7b..fbdb69c 100644
  		if (i < 0)
  			goto fail;
  		services[i].seen = 1;
-@@ -1889,10 +1895,13 @@ main(int argc, char *argv[])
+@@ -1889,10 +1896,13 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
@@ -202,6 +210,35 @@ index 0b0ad7b..fbdb69c 100644
  
  	cwd = opendir(servicedir);
  	if (!cwd)
+@@ -2091,10 +2101,25 @@ again:
+ 		}
+ 
+ #ifdef __linux__
+-		if (mount("/", "/", "", MS_REMOUNT | MS_RDONLY, "") < 0)
+-			prn(2, "- nitro: could not remount / read-only: errno=%d\n", errno);
++		// Get filesystem stats
++		struct statvfs rootst;
++		int	rootro, r;
++		if ((r=statvfs("/", &rootst)) != 0) {
++			prn(2, "- nitro: could not check / read-only: errno=%d return=%d\n", errno, r);
++			rootro = -1;
++		}
++		else
++			// Check if the filesystem is read-only
++			rootro = (rootst.f_flag & ST_RDONLY) ? 1 : 0;
++
++		if (rootro != 1){
++			if (mount("/", "/", "", MS_REMOUNT | MS_RDONLY, "") < 0)
++				prn(2, "- nitro: could not remount / read-only: errno=%d\n", errno);
++			else
++				prn(2, "- nitro: remounted / read-only\n");
++		}
+ 		else
+-			prn(2, "- nitro: remounted / read-only\n");
++			prn(2, "- nitro: / already read-only\n");
+ #endif
+ #ifdef __NetBSD__
+ 		char args[256];
 diff --git a/nitroctl.c b/nitroctl.c
 index a473a3e..b2cea78 100644
 --- a/nitroctl.c

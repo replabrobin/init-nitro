@@ -19,3 +19,20 @@ diff -ur init-nitro-rc-orig/script/functions.in init-nitro-rc/script/functions.i
      echo " "
      printhl "Initiating shutdown\n"
      echo " "
+--- init-nitro-rc-orig/sv.d/remount-root.in	2026-01-30 15:12:04.835213435 +0000
++++ init-nitro-rc/sv.d/remount-root.in	2026-01-30 15:17:47.746425027 +0000
+@@ -11,8 +11,12 @@
+         stat_done remount-root
+         ;;
+     stop)
+-        stat_busy "Remounting root filesystem ro"
+-        mount -o remount,ro / || stat_die remount-root
++        if findmnt -n -o OPTIONS / | grep -qE "^ro,|,ro,|,ro$"; then
++            stat_busy "Filesystem / already ro"
++        else
++            stat_busy "Remounting root filesystem ro"
++            mount -o remount,ro / || stat_die remount-root
++        fi
+         sync
+         rm_daemon remount-root
+         stat_done remount-root
