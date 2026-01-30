@@ -1,9 +1,9 @@
 pkgname=init-nitro
-pkgver=0.7.1
+pkgver=0.7.1.1
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
 _nrev="86e8bfab86c32d78341f9cd9d956bbca2b391a59"
 _rcrev="1aa6746e1aaf014f2ea52b5af2a83a96a6fd34be"
-_bsrev="a174cafdeef8c1cd65309c596451c5bc0c046fd9"
+_bsrev="88f73a18fa3a5c1cd429870e189017a6aabddfa9"
 _rver=2.2.0
 _rpver=20250506
 pkgrel=1
@@ -38,7 +38,7 @@ source=(
 		)
 sha256sums=('d729647fbc043454226e896ca5dbc78c8f342ebae8d9493bf0059ee9fe64a5e4'
             '30bd7e9937d980bb445ae581d0f21a8f5c78314b375a73ef0b34cf35fdafdc09'
-            '109c6c7e6d988225bb27c93039a3fe8c431a02ac29bf089ca1e7fed988de92b8'
+            'cdfc7698f266be6a5a2f81033a715916dccbde0b3185a4941cf3d71488000444'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '871e98fc8c12ce76d8a8a533bb214fbc9ce1b9f1ba6c8c4b5fc0575d46c6b3ed'
