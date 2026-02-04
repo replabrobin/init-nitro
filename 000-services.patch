@@ -240,10 +240,10 @@ index 0b0ad7b..7a77778 100644
  #ifdef __NetBSD__
  		char args[256];
 diff --git a/nitroctl.c b/nitroctl.c
-index a473a3e..b2cea78 100644
+index 6d12671..8712057 100644
 --- a/nitroctl.c
 +++ b/nitroctl.c
-@@ -609,7 +609,7 @@ main(int argc, char *argv[])
+@@ -611,7 +611,7 @@ main(int argc, char *argv[])
  			execvp("nitro", argv);
  			dprintf(2, "nitroctl: exec init failed: %s\n", strerror(errno));
  
