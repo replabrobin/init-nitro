@@ -1,7 +1,7 @@
 pkgname=init-nitro
-pkgver=0.7.1.6
+pkgver=0.7.1.7
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
-_nrev="26be7f95a2d1070900ef0811d5013b192686137c"
+_nrev="18ad5e23dc95b44faa24764d6f7fa2cee889b638"
 _rcrev="8131b729b2dc35484ec4518b3970f4ee7b3f79d2"
 _bsrev="a727922bcb25ef2e0c17a641bc130e7cfed12f0b"
 _rver=2.2.0
@@ -36,12 +36,12 @@ source=(
 		"nitro-hook"
 		"version.txt.in"
 		)
-sha256sums=('401d9732340dd5da706a6f97006a13a13de9598c83ece0f4341b99ed3e62efca'
+sha256sums=('911bc633b7866c0ad6cb8ec4ddd90406e05d97f5478f723179b96caaefc2ad8d'
             '250b2a3c310de6d3c36bc81638dbf4f0d267b855eece4257de1c751c93349cfd'
             '8d406ef9f93944cd14305a73c9e65ecfe570d064307d8c3695d7d5f5ce07a085'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
-            '86602eed61cbbadf852d6cda0c92c841fc3b65ac039d1d574fa8cc773eada64c'
+            '816b1fa179c078138ce9293e38043376fa5ff4d4112b846f6ada191f2fbd4561'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
             'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
             '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'

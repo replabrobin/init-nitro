@@ -1,5 +1,5 @@
 diff --git a/README.md b/README.md
-index a804092..e768b99 100644
+index 3922a80..a09e0d9 100644
 --- a/README.md
 +++ b/README.md
 @@ -13,7 +13,7 @@ These are the main applications nitro is designed for:
@@ -20,7 +20,7 @@ index a804092..e768b99 100644
  can contain several files:
  
  - `setup`, an optional executable file that is run before the service starts.
-@@ -209,7 +209,7 @@ Where COMMAND is one of:
+@@ -211,7 +211,7 @@ Where COMMAND is one of:
  - t: send signal SIGTERM to SERVICE
  - k: send signal SIGKILL to SERVICE
  - pidof: print the PID of the SERVICE, or return 1 if it's not up
@@ -29,7 +29,7 @@ index a804092..e768b99 100644
  - Shutdown: shutdown (poweroff) the system
  - Reboot: reboot the system
  
-@@ -270,7 +270,7 @@ the appropriate target.
+@@ -276,7 +276,7 @@ the appropriate target.
  You can add this line to `/etc/ttys` to run `nitro` supervised by
  FreeBSD `init`:
  
@@ -52,7 +52,7 @@ index f484baa..391d0b1 100644
  .Pp
  When used as init, and the argument
 diff --git a/nitro.c b/nitro.c
-index 0b0ad7b..7a77778 100644
+index 9b77313..2527aa6 100644
 --- a/nitro.c
 +++ b/nitro.c
 @@ -14,6 +14,7 @@
@@ -87,7 +87,7 @@ index 0b0ad7b..7a77778 100644
  
  int
  stat_slash(const char *dir, const char *name, struct stat *st)
-@@ -1138,36 +1147,40 @@ refresh_log:
+@@ -1145,36 +1154,40 @@ refresh_log:
  	return i;
  }
  
@@ -157,7 +157,7 @@ index 0b0ad7b..7a77778 100644
  }
  
  void
-@@ -1178,8 +1191,8 @@ rescan()
+@@ -1185,8 +1198,8 @@ rescan()
  	for (i = 0; i < max_service; i++)
  		services[i].seen = 0;
  
@@ -168,7 +168,7 @@ index 0b0ad7b..7a77778 100644
  	struct dirent *ent;
  	while ((ent = readdir(cwd))) {
  		char *name = ent->d_name;
-@@ -1568,19 +1581,13 @@ handle_control_sock()
+@@ -1575,19 +1588,13 @@ handle_control_sock()
  	case T_CMD_RESTART:
  	case T_CMD_READY:
  	{
@@ -192,7 +192,7 @@ index 0b0ad7b..7a77778 100644
  		if (i < 0)
  			goto fail;
  		services[i].seen = 1;
-@@ -1889,10 +1896,13 @@ main(int argc, char *argv[])
+@@ -1896,10 +1903,13 @@ main(int argc, char *argv[])
  			close(voidfd);
  	}
  
@@ -210,7 +210,7 @@ index 0b0ad7b..7a77778 100644
  
  	cwd = opendir(servicedir);
  	if (!cwd)
-@@ -2091,10 +2101,25 @@ again:
+@@ -2098,10 +2108,25 @@ again:
  		}
  
  #ifdef __linux__
