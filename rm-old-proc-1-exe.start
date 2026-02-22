@@ -1,0 +1,7 @@
+#!/bin/sh
+fn="/usr/bin/old-proc-1-exe"
+if [ -x "$fn" ]; then
+	rm "$fn" && m="removed $fn" || m="could not remove $fn"
+	logger "$0: $m"
+fi
+	

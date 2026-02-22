@@ -1,5 +1,5 @@
 pkgname=init-nitro
-pkgver=0.7.1.7
+pkgver=0.7.1.8
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
 _nrev="18ad5e23dc95b44faa24764d6f7fa2cee889b638"
 _rcrev="8131b729b2dc35484ec4518b3970f4ee7b3f79d2"
@@ -17,6 +17,7 @@ conflicts=('svc-manager' 'eudev-nitro')
 replaces=('eudev-nitro')
 makedepends=()
 optdepends=()
+install=nitro.install
 groups=()
 backup=()
 options=('!debug')
@@ -28,12 +29,14 @@ source=(
 		"runit-patches-${_rpver}.tar.xz::https://github.com/clan/runit/releases/download/runit-${_rver}-r2/runit-${_rver}-patches-${_rpver}.tar.xz"
 		"000-services.patch"
 		"shutdown"
-		"00-init-nitro-remove.hook"
-		"99-init-nitro-install.hook"
-		"init-nitro-script"
+		"init-nitro-pre.hook"
 		"nitro-install.hook"
 		"nitro-remove.hook"
+		"30-binfmt.hook"
+		"30-sysctl.hook"
 		"nitro-hook"
+		"nitro-tmpfiles.conf"
+		"rm-old-proc-1-exe.start"
 		"version.txt.in"
 		)
 sha256sums=('911bc633b7866c0ad6cb8ec4ddd90406e05d97f5478f723179b96caaefc2ad8d'
@@ -43,12 +46,14 @@ sha256sums=('911bc633b7866c0ad6cb8ec4ddd90406e05d97f5478f723179b96caaefc2ad8d'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '816b1fa179c078138ce9293e38043376fa5ff4d4112b846f6ada191f2fbd4561'
             '08e048595bfac34ef656350c320a93de023e4b0e030a29bddaef3239d9d83d17'
-            'c5d1acec2129a16bdc367b8b7aae9645174d940276fb9519832c7098e488c528'
-            '50706e557b8f5dcd451f70b7f86c71a2c7cb78efcc7d9726c15f36d6a773f380'
-            '979b592f12348e49f7543ad539780af5b6fa7b8d3c3669ca6d683894128be26f'
+            '6d2bf9e6bb96f3c3409c5dacd136594c02dd022b4b56870c255a986bf39c59fa'
             'c495dc6223f3bcdc1f9dfb24e64dbf901048eca80fd2219990e086d0e806bba5'
             'e1b28215d691b57b9b75324fb5f4ef62f2b0362412824322dfb9fdcd879aff84'
-            'd2e9255b5181d4668c899a90d8cb05730bcb0d98ca05cc1bea785f94df9c6759'
+            'c74fa59269b3a7eeca785858de8e267c951169d3384bf543d8850f9594e049f1'
+            '070114ee451b1842c6e7663efb16c8a8da09eda95aa38de00108dd123e435f53'
+            'c44836eaa720888123c9d78b903984b64890b621b6db6ef598bd3d9141e60669'
+            '071618745ff8a8a4473747dab599375beec88555706cae8d75f733b8eb3d8f28'
+            'e7341f0e69dd20924126419131f84ed67a5f0e697006b187d0edde900b8a90b1'
             '2940cec3306bc3907bcc48ccbdc4cf750a7324037f06b8e4d7d0d928ca5b606e')
 validpgpkeys=()
 
@@ -112,12 +117,12 @@ package() {
 	install -Dm755 nitro ${pkgdir}/usr/bin/nitro
 	install -Dm755 nitroctl ${pkgdir}/usr/bin/nitroctl
 	install -Dm755 ${srcdir}/shutdown ${pkgdir}/usr/bin/shutdown
-	install -Dm755 ${srcdir}/init-nitro-script "${pkgdir}/usr/share/libalpm/scripts/init-nitro-script"
-	install -Dm644 ${srcdir}/00-init-nitro-remove.hook "${pkgdir}/usr/share/libalpm/hooks/00-init-nitro-remove.hook"
-	install -Dm644 ${srcdir}/99-init-nitro-install.hook "${pkgdir}/usr/share/libalpm/hooks/99-init-nitro-install.hook"
+	install -Dm644 ${srcdir}/init-nitro-pre.hook "${pkgdir}/usr/share/libalpm/hooks/init-nitro-pre.hook"
 	install -Dm755 ${srcdir}/nitro-hook "${pkgdir}/usr/share/libalpm/scripts/nitro-hook"
 	install -Dm644 ${srcdir}/nitro-install.hook "${pkgdir}/usr/share/libalpm/hooks/nitro-install.hook"
 	install -Dm644 ${srcdir}/nitro-remove.hook "${pkgdir}/usr/share/libalpm/hooks/nitro-remove.hook"
+	install -Dm644 ${srcdir}/30-binfmt.hook "${pkgdir}/usr/share/libalpm/hooks/30-binfmt.hook"
+	install -Dm644 ${srcdir}/30-sysctl.hook "${pkgdir}/usr/share/libalpm/hooks/30-sysctl.hook"
 	for x in halt poweroff reboot; do ln -s nitroctl ${pkgdir}/usr/bin/$x;done
 	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/chpst ${pkgdir}/usr/bin/chpst
 	install -Dm755 ${srcdir}/admin/runit-${_rver}/command/utmpset ${pkgdir}/usr/bin/utmpset
@@ -136,6 +141,11 @@ package() {
 	install -Dm755 ${srcdir}/init-nitro-rc/script/zzz ${pkgdir}/usr/bin/zzz
 	install -Dm644 ${srcdir}/init-nitro-rc/src/pause.1 "${pkgdir}/usr/share/man/man1/pause.1"
 	install -Dm755 ${srcdir}/init-nitro-rc/src/pause ${pkgdir}/usr/bin/pause
+	install -dm755 "${pkgdir}/usr/lib/tmpfiles.d"
+	install -Dm644 "${srcdir}/nitro-tmpfiles.conf" "${pkgdir}/usr/lib/tmpfiles.d/nitro-tmpfiles.conf"
+	install -dm755 "${pkgdir}/etc/local.d"
+	install -Dm755 "${srcdir}/rm-old-proc-1-exe.start" "${pkgdir}/etc/local.d/rm-old-proc-1-exe.start"
+
 
 	# iputils-specific configuration
 	mkdir -p "$pkgdir/usr/lib/sysctl.d"
