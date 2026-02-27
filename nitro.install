@@ -1,3 +1,9 @@
+post_install(){
+	if [ "`readlink /usr/bin/init`" != "nitro" ]; then
+		ln -sf "nitro" "/usr/bin/init" 
+		echo "==> /usr/bin/init --> nitro"
+	fi
+}
 post_upgrade()
 {
     if [ -x /etc/rc.local.pacsave ]; then
@@ -7,4 +13,5 @@ post_upgrade()
         echo "    it doesn't get moved, you need to move it manually."
         echo "    Our apologies for the inconvenience."
     fi
+	post_install
 }

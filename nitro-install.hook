@@ -8,4 +8,4 @@ Target = etc/nitro/sv/*
 Description = Displaying nitro service help ...
 When = PostTransaction
 Exec = /usr/share/libalpm/scripts/nitro-hook add
-NeedsTargets
+#NeedsTargets

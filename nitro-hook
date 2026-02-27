@@ -33,8 +33,9 @@ each_conf() {
 
 rename_1_exe(){
 	local exe="$(readlink /proc/1/exe 2>/dev/null || true)"
-	if [ -n "$exe" -a -x "$exe" ]; then
-		mv "$exe" "/usr/bin/old-proc-1-exe"
+	local dst="/usr/bin/old-proc-1-exe"
+	if [ -n "$exe" -a "$exe" != "$dst" -a -x "$exe" ]; then
+		mv "$exe" "$dst"
 	fi
 }
 
