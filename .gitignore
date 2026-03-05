@@ -71,3 +71,4 @@ dkms.conf
 /init-nitro-*.tar.zst.sig
 /.SRCINFO
 /build-me
+/release

@@ -1,12 +1,12 @@
 pkgname=init-nitro
-pkgver=0.7.1.8
+pkgver=0.8.0.0
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
-_nrev="18ad5e23dc95b44faa24764d6f7fa2cee889b638"
+_nrev="6473007bf1587240ff39c0ae8b128bc22f81f1e0"
 _rcrev="8131b729b2dc35484ec4518b3970f4ee7b3f79d2"
 _bsrev="a727922bcb25ef2e0c17a641bc130e7cfed12f0b"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=2
+pkgrel=1
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -39,7 +39,7 @@ source=(
 		"rm-old-proc-1-exe.start"
 		"version.txt.in"
 		)
-sha256sums=('911bc633b7866c0ad6cb8ec4ddd90406e05d97f5478f723179b96caaefc2ad8d'
+sha256sums=('a8d5518f8d007d05277a96f74b728740183e1217ff912aba9fc06d19118b9cdc'
             '250b2a3c310de6d3c36bc81638dbf4f0d267b855eece4257de1c751c93349cfd'
             '8d406ef9f93944cd14305a73c9e65ecfe570d064307d8c3695d7d5f5ce07a085'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
@@ -65,7 +65,7 @@ prepare() {
 	_nrev="$_nrev" \
 	_bsrev="$_bsrev" \
 	_rcrev="$_rcrev" \
-	version="${pkgver}-${_nrev:0:10}" \
+	version="${pkgver}-${pkgrel}-${_nrev:0:10}" \
 		envsubst < version.txt.in > version.txt
 	ln -sf nitro-${_nrev} nitro
 	ln -sf init-nitro-rc{-${_rcrev},}
