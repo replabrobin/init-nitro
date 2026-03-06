@@ -1,5 +1,5 @@
 pkgname=init-nitro
-pkgver=0.8.0.0
+pkgver=0.8.0.1
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
 _nrev="6473007bf1587240ff39c0ae8b128bc22f81f1e0"
 _rcrev="8131b729b2dc35484ec4518b3970f4ee7b3f79d2"
@@ -11,8 +11,8 @@ pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
 license=('GPL')
-provides=('nitro')
-depends=('glibc' 'bash' 'nitro-nsm')
+provides=('nitro' 'eudev-nitro')
+depends=('glibc' 'bash' 'nitro-nsm' 'eudev-nitro' 'artix-cgroups')
 conflicts=('svc-manager' 'eudev-nitro')
 replaces=('eudev-nitro')
 makedepends=()
