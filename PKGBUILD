@@ -3,10 +3,10 @@ pkgver=0.8.1.0
 #reviisions nitro, init-nitro-rc init-intro-base-svcs
 _nrev="f9761d56c8411480f3561510f7995ef2fdbe7400"
 _rcrev="8131b729b2dc35484ec4518b3970f4ee7b3f79d2"
-_bsrev="a727922bcb25ef2e0c17a641bc130e7cfed12f0b"
+_bsrev="612105daef1aef63e4f8c4e7abb3cc84be4f9880"
 _rver=2.2.0
 _rpver=20250506
-pkgrel=1
+pkgrel=2
 pkgdesc='simple init'
 arch=('x86_64' 'aarch64')
 url='https://github.com/leahneukirchen/nitro'
@@ -41,7 +41,7 @@ source=(
 		)
 sha256sums=('679d6d0a87f3955633e643e773e18a0603815ef2d560b6acb5a36e403cf411a5'
             '250b2a3c310de6d3c36bc81638dbf4f0d267b855eece4257de1c751c93349cfd'
-            '8d406ef9f93944cd14305a73c9e65ecfe570d064307d8c3695d7d5f5ce07a085'
+            'd0d72c56437a8d8b1c215ff3aefc67f9517aa3f57d78758c390c0bbafaca052e'
             '95ef4d2868b978c7179fe47901e5c578e11cf273d292bd6208bd3a7ccb029290'
             'bbd115a9612c5a8df932cd43c406393538389b248ad44f1d9903bc0e2850e173'
             '1540738cb125828524b277bdfcd5804abbfa247b23d68aa1e28303dd1e39bf26'
