@@ -1,11 +1,46 @@
-post_install(){
-	if [ "`readlink /usr/bin/init`" != "nitro" ]; then
-		ln -sf "nitro" "/usr/bin/init" 
-		echo "==> /usr/bin/init --> nitro"
+#
+
+pre_install() {
+	echo "#+++++ in nitro.pre_install" > /dev/tty
+	local hook="/usr/share/libalpm/hooks/55-initswitch.hook"
+	echo "hook=$hook $(test -f "$hook" && echo exists) $(! grep -q nitro "$hook" && echo "needs edit")"
+	if [ -f "$hook" ] && ! grep -q nitro "$hook"; then
+		echo "  ==> editing '$hook'"
+		sed -i -e'/Target = usr\/bin\/runit-init/a Target = usr/bin/nitro' "$hook"
+	fi
+	hook="/usr/share/libalpm/scripts/initswitch-hook"
+	if [ -f "$hook" ] && ! grep -q nitro "$hook"; then
+		echo "  ==> editing '$hook'"
+		sed -i -e'/artix_inits/s/runit-init/runit-init nitro/' "$hook"
+	fi
+
+	local exe="/usr/bin/init"
+	if [ -h "$exe" ]; then
+		exe="$(readlink $exe)"
+		if [ -n "$exe" -a -x "$exe" -a "$(basename "$exe")" !- "nitro" ]; then
+			local dst="/usr/bin/old-proc-1-exe"
+			if [ "$exe" != "$dst" -a -x "$exe" ]; then
+				echo "  ==> moving '$exe' to '$dst'"
+				mv "$exe" "$dst"
+			fi
+		fi
 	fi
 }
-post_upgrade()
-{
+
+pre_upgrade() {
+	echo "#+++++ in nitro.pre_upgrade"
+	pre_install
+}
+
+post_install() {
+	echo "#+++++ in post_install"
+	if [ "`readlink /usr/bin/init`" != "nitro" ]; then
+		ln -sf "nitro" "/usr/bin/init" 
+		echo "  ==> /usr/bin/init --> nitro"
+	fi
+}
+post_upgrade() {
+	echo "#+++++ in nitro.post_upgrade"
     if [ -x /etc/rc.local.pacsave ]; then
         mv /etc/rc.local.pacsave /etc/rc.local
         echo "==> If you have the '/etc/rc.local saved as /etc/rc.local.pacsave'"
